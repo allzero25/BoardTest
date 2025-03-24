@@ -150,6 +150,24 @@
 		color: #666666;
 	}
 	
+	div#noResult {
+		border: solid 0px red;
+		width: 70%;
+		margin: 15% auto;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+	}
+	
+	div#noResult i {
+		font-size: 2.5em;
+		color: #737373;
+	}
+	
+	div#noResult span {
+		margin-top: 2%;
+		font-size: 1.3em;
+	}
 </style>
 
 <script type="text/javascript">
@@ -220,70 +238,78 @@
 	</form>
 	
 	<div class="boardContainer">
-		<c:forEach var="board" items="${requestScope.boardList}">
-			<div class="board d-flex" style="border-bottom: solid 1px #ccc; padding: 1%;">
-				<%-- 첨부파일 이미지가 있을 경우 --%>
-				<c:if test="${not empty board.thumbnailImg}">
-					<div class="InfoContainer">
-						<div class="d-flex justify-content-between" style="margin: 2%">
-							<div> <!-- 이름,날짜 -->
-								<div class="name">${board.name}</div>
-								<div class="regDate">${board.regDate}</div>
+		<c:if test="${not empty requestScope.boardList}">
+			<c:forEach var="board" items="${requestScope.boardList}">
+				<div class="board d-flex" style="border-bottom: solid 1px #ccc; padding: 1%;">
+					<%-- 첨부파일 이미지가 있을 경우 --%>
+					<c:if test="${not empty board.thumbnailImg}">
+						<div class="InfoContainer">
+							<div class="d-flex justify-content-between" style="margin: 2%">
+								<div> <!-- 이름,날짜 -->
+									<div class="name">${board.name}</div>
+									<div class="regDate">${board.regDate}</div>
+								</div>
+								<div> <!-- 조회수 -->
+									<div class="readCount">조회 ${board.readCount}</div>
+								</div>
 							</div>
-							<div> <!-- 조회수 -->
-								<div class="readCount">조회 ${board.readCount}</div>
+							
+							<div style="margin: 0 2% 2% 2%;"> <!-- 제목, 내용, 댓글 -->
+								<div class="subject" onclick="goDetail(${board.boardSeq})">${board.subject}</div>
+								<div class="content" onclick="goDetail(${board.boardSeq})">
+									<c:choose>
+										<c:when test="${fn:length(board.content) > 150}">  <%-- 150자 이상일 경우 자르기 --%>
+											${fn:substring(board.content,0,150)}...
+										</c:when>
+										<c:otherwise>${board.content}</c:otherwise>
+									</c:choose>
+								</div>
+								<div class="commentCount">댓글 ${board.commentCount}</div>
 							</div>
 						</div>
 						
-						<div style="margin: 0 2% 2% 2%;"> <!-- 제목, 내용, 댓글 -->
-							<div class="subject" onclick="goDetail(${board.boardSeq})">${board.subject}</div>
-							<div class="content" onclick="goDetail(${board.boardSeq})">
-								<c:choose>
-									<c:when test="${fn:length(board.content) > 150}">  <%-- 150자 이상일 경우 자르기 --%>
-										${fn:substring(board.content,0,150)}...
-									</c:when>
-									<c:otherwise>${board.content}</c:otherwise>
-								</c:choose>
-							</div>
-							<div class="commentCount">댓글 ${board.commentCount}</div>
+						<div class="imgContainer" onclick="goDetail(${board.boardSeq})"> <!-- 이미지 -->
+							<img src="<%=ctxPath%>/resources/images/board/${board.thumbnailImg}" alt="Board Image">
 						</div>
-					</div>
+					</c:if>
 					
-					<div class="imgContainer" onclick="goDetail(${board.boardSeq})"> <!-- 이미지 -->
-						<img src="<%=ctxPath%>/resources/images/board/${board.thumbnailImg}" alt="Board Image">
-					</div>
-				</c:if>
-				
-				<%-- 첨부파일 이미지가 없을 경우 --%>
-				<c:if test="${empty board.thumbnailImg}">
-					<div class="InfoContainer" style="width: 100%;">
-						<div class="d-flex justify-content-between" style="margin: 2%">
-							<div> <!-- 이름,날짜 -->
-								<div class="name">${board.name}</div>
-								<div class="regDate">${board.regDate}</div>
+					<%-- 첨부파일 이미지가 없을 경우 --%>
+					<c:if test="${empty board.thumbnailImg}">
+						<div class="InfoContainer" style="width: 100%;">
+							<div class="d-flex justify-content-between" style="margin: 2%">
+								<div> <!-- 이름,날짜 -->
+									<div class="name">${board.name}</div>
+									<div class="regDate">${board.regDate}</div>
+								</div>
+								<div> <!-- 조회수 -->
+									<div class="readCount">조회 ${board.readCount}</div>
+								</div>
 							</div>
-							<div> <!-- 조회수 -->
-								<div class="readCount">조회 ${board.readCount}</div>
+							
+							<div style="margin: 0 2% 2% 2%;"> <!-- 제목, 내용, 댓글 -->
+								<div class="subject" onclick="goDetail(${board.boardSeq})">${board.subject}</div>
+								<div class="content" onclick="goDetail(${board.boardSeq})" style="height: 60px;">
+									<c:choose>
+										<c:when test="${fn:length(board.content) > 210}">  <%-- 210자 이상일 경우 자르기 --%>
+											${fn:substring(board.content,0,210)}...
+										</c:when>
+										<c:otherwise>${board.content}</c:otherwise>
+									</c:choose>
+								</div>
+								<div class="commentCount">댓글 ${board.commentCount}</div>
 							</div>
 						</div>
-						
-						<div style="margin: 0 2% 2% 2%;"> <!-- 제목, 내용, 댓글 -->
-							<div class="subject" onclick="goDetail(${board.boardSeq})">${board.subject}</div>
-							<div class="content" onclick="goDetail(${board.boardSeq})" style="height: 60px;">
-								<c:choose>
-									<c:when test="${fn:length(board.content) > 210}">  <%-- 210자 이상일 경우 자르기 --%>
-										${fn:substring(board.content,0,210)}...
-									</c:when>
-									<c:otherwise>${board.content}</c:otherwise>
-								</c:choose>
-							</div>
-							<div class="commentCount">댓글 ${board.commentCount}</div>
-						</div>
-					</div>
-				</c:if>
-			</div>
-		</c:forEach>
+					</c:if>
+				</div>
+			</c:forEach>
+		</c:if>
 		
+		<c:if test="${empty requestScope.boardList}">
+			<div id="noResult">
+				<i class="fa-regular fa-face-sad-tear"></i>
+				<span>결과가 없습니다.</span>
+			</div>
+		</c:if>
 	</div>
 	
 	<div id="pageBar">

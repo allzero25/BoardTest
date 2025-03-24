@@ -553,7 +553,7 @@ public class BoardController {
 		MemberVO loginUser = (MemberVO)session.getAttribute("loginUser");
 		
 		try {
-			if(loginUser != null && loginUser.getUserid().equals(fk_userid)) {
+			if(loginUser != null && loginUser.getUserid().equals(fk_userid) || "0".equals(loginUser.getStatus())) {
 				
 				// 글번호에 대한 댓글목록 불러오기
 				List<CommentVO> commentList = boardService.getCommentListNoPaging(boardSeq);
