@@ -1,0 +1,76 @@
+body {
+    font-family: "Noto Sans KR", sans-serif;
+    font-style: normal;
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    div.container {
+        width: 70vw !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    div.container {
+        width: 80vw !important;
+    }
+}
+
+@media screen and (max-width: 425px) {
+    div.container {
+        width: 100vw !important;
+        margin-top: 0 !important;
+    }
+
+    h2 {
+        font-size: 1.4rem !important;
+    }
+
+    div.info input {
+        font-size: 0.8rem !important;
+    }
+}
+
+
+div.container {
+    width: 35%;
+    margin: 5% auto;
+    border: solid 1px rgba(0, 0, 0, 0.15);
+    border-radius: 40px;
+    box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
+}
+
+div.info {
+    border: solid 0px red;
+    width: 100%;
+    margin: 5% 0;
+}
+
+div.info input {
+    display: block;
+    width: 100%;
+    max-width: 680px;
+    height: 50px;
+    margin: 0 auto;
+    margin-bottom: 4%;
+    border-radius: 8px;
+    border: solid 1px rgba(15, 19, 42, .1);
+    padding: 0 0 0 15px;
+    font-size: 16px;
+}
+
+button#loginBtn {
+    width: 100%;
+    height: 50px;
+    margin: 1% auto;
+    border-radius: 8px;
+}
+
+div.idPwFind {
+    color: #808080;
+}
+
+span:hover {
+    cursor: pointer;
+    color: black;
+    font-weight: 500;
+}

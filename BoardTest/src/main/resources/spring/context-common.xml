@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <!-- component-scan 설정 -->
+    <context:component-scan base-package="com.project">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    
+    <context:property-placeholder location="classpath:globals.properties"/>
+    
+
+    <!-- 메시지 소스 빈 설정 (전자정부 메시지 시스템 제거 후 일반 메시지 시스템 유지) -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>classpath:/messages/common</value>
+                <value>classpath:/messages/errors</value>
+            </list>
+        </property>
+        <property name="cacheSeconds" value="60"/>
+    </bean>
+
+    <!-- 파일 업로드 설정 (전자정부 전용 `EgovMultipartResolver` 제거) -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="100000000"/>
+        <property name="maxInMemorySize" value="100000000"/>
+    </bean>
+
+</beans>

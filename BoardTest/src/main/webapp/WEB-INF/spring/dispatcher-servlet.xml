@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:beans="http://www.springframework.org/schema/beans"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+           
+<!-- xmlns:aop, xsi:schemaLocation 에도 aop 추가해야 함 ★ -->
+
+
+    <!-- 패키지 내 Controller, Service, Repository 클래스의 auto detect를 위한 설정 -->
+    <context:component-scan base-package="com.project">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+
+    <!-- 화면처리용 JSP 파일명의 prefix, suffix 처리 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    
+    <!-- 이미지, css, js 등 위치 경로 설정 -->
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+
+    <!-- Spring MVC의 기본 설정 -->
+    <mvc:annotation-driven/>
+
+   	<!-- === #44. 양방향 암호화 알고리즘인 AES256 를 사용하여 복호화 하기 위한 클래스(파라미터가 있는 생성자) 의존객체 bean 생성하기 === --> 
+    <beans:bean id="aes256" class="com.project.app.common.AES256">
+       <beans:constructor-arg>
+       <!-- bean을 수동생성 ==> 매개변수 있는 생성자 표현 -arg -->
+          <beans:value>abcd0070#gclass$</beans:value>   
+       </beans:constructor-arg>
+    </beans:bean>
+
+	<!-- === 템플릿 프레임워크 TilesViewResolver 를 bean으로 등록 ======= -->
+	<beans:bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<beans:property name="definitions">
+			<beans:list>
+				<beans:value>/WEB-INF/tiles/tiles-layout.xml</beans:value>
+				<!-- 선언하면서 해당 경로에 폴더도만들고 똑같이 생성하기 -->
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+	
+	<!-- Resolver 우선순위 => TilesViewResolver 1순위로 -->
+    <beans:bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+	    <beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView" />
+	    <beans:property name="order" value="1"/>
+    </beans:bean>
+    
+   	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	    <beans:property name="prefix" value="/WEB-INF/jsp/" />
+	    <beans:property name="suffix" value=".jsp" />
+	    <beans:property name="order" value="2"/>
+   	</beans:bean>
+   	
+   	<!-- AOP 관련 어노테이션 동작이 가능하도록 설정 -->
+   	<aop:aspectj-autoproxy />
+   	
+   	<aop:config proxy-target-class="true">
+   		<aop:pointcut id="controllerOperation" expression="execution(public * com.project.app..*Controller.*(..))" />
+   	</aop:config>
+   	
+   	<!-- 파일 업로드 의존객체 -->
+   	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+   		<beans:property name="defaultEncoding" value="utf-8" />
+	    <beans:property name="maxUploadSize" value="10485760" />
+	</beans:bean>
+	
+	
+	
+	   	
+</beans>

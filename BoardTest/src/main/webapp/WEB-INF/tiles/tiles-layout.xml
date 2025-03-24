@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ======= tiles 레이아웃 설정하기 ======= -->
+
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       
+<tiles-definitions> 
+
+   <!-- ==== tiles 를 사용하는 레이아웃(header,content,footer) 설정 시작 ==== -->
+   <definition name="layout-tiles1"  template="/WEB-INF/tiles/layout/layout-tiles1.jsp"> 
+      <put-attribute name="header"  value="/WEB-INF/tiles/tile1/header.jsp" />
+      <put-attribute name="content" value="" />
+      <put-attribute name="footer"  value="" />
+   </definition>
+   
+   <!-- tiles-layout.xml 에서 선언된 name으로 put-attribute 된 것이 해당 jsp에서 insert-attribute 된다. -->
+   
+   <definition name="*/*/*.tiles1" extends="layout-tiles1">
+      <put-attribute name="content" value="/WEB-INF/jsp/tiles1/{1}/{2}/{3}.jsp"/>
+   </definition>
+   
+   <definition name="*/*.tiles1" extends="layout-tiles1">
+      <put-attribute name="content" value="/WEB-INF/jsp/tiles1/{1}/{2}.jsp"/>
+   </definition>
+   
+   <definition name="*.tiles1" extends="layout-tiles1">
+      <put-attribute name="content" value="/WEB-INF/jsp/tiles1/{1}.jsp"/>
+   </definition>
+   
+
+</tiles-definitions>       
+       
