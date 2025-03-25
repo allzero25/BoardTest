@@ -11,6 +11,16 @@
 	        width: 100% !important;
 	    }
 	    
+	    span#editDelBtn {
+	    	position: relative;
+	    }
+	    
+	    div.editDelDiv {
+	    	position: absolute;
+			width: 110px !important;
+			margin-left: 20% !important;
+	    }
+	    
 	    div#commentBtn {
 	    	width: 120px !important;
 	    }
