@@ -532,6 +532,25 @@
 			
 		});
 		
+		
+		// 로그인을 하지 않았을 경우 댓글창 클릭 시
+		$("textarea#goLogin").on("click", function() {
+			$.ajax({
+				url: "<%=ctxPath%>/board/saveGoBackURL.do",
+				type: "post",
+				data: {"boardSeq":"${requestScope.board.boardSeq}"},
+				dataType: "json",
+				success: function(json) {
+					if(json.goBackURL != null) {
+						location.href = "<%=ctxPath%>/member/login.do";
+					}
+				},
+				error: function(request, status, error) {
+	                alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	            }
+			});
+		});
+		
 	}); // end of $(document).ready(function() {}) ---------------------------------
 	
 	
@@ -1063,7 +1082,7 @@
 							</div>
 						</c:if>
 						<c:if test="${empty sessionScope.loginUser}">
-							<textarea id="goLogin" onclick="location.href='<%=ctxPath%>/member/login.do'" style="margin: 1% 0; resize: none;" rows="5" placeholder="댓글을 작성하려면 로그인하세요." readonly></textarea>
+							<textarea id="goLogin" style="margin: 1% 0; resize: none;" rows="5" placeholder="댓글을 작성하려면 로그인하세요." readonly></textarea>
 						</c:if>
 					</div>
 				</form>

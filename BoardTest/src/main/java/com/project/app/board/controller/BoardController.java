@@ -614,4 +614,29 @@ public class BoardController {
 		
 	} // end of public String deleteBoard(HttpServletRequest request, @RequestParam String fk_userid, @RequestParam String boardSeq) ---------
 	
+	
+	// 글 상세페이지 댓글창에서 '로그인하세요' 클릭 시 상세페이지 goBackURL을 저장
+	@ResponseBody
+	@PostMapping("saveGoBackURL.do")
+	public String saveGoBackURL(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		
+		String prevURL = CommonUtil.getPreviousURL(request);
+		
+		String boardSeq = request.getParameter("boardSeq");
+		
+		if(boardSeq != null) {
+			prevURL += (prevURL.contains("?") ? "&" : "?") + "boardSeq=" + boardSeq;
+		}
+//		System.out.println(prevURL);
+		
+		session.setAttribute("goBackURL", prevURL);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("goBackURL", prevURL);
+		
+		return jsonObj.toString();
+	}
+	
 }

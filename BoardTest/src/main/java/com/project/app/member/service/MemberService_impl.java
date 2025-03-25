@@ -117,6 +117,7 @@ public class MemberService_impl implements MemberService {
 			session.setAttribute("loginUser", loginUser);
 			
 			String goBackURL = (String)session.getAttribute("goBackURL");
+//			System.out.println("goBackURL : " + goBackURL);
 			
 			if(goBackURL != null) { // 되돌아갈 페이지가 있을 경우
 				mav.setViewName("redirect:" + goBackURL);
