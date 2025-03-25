@@ -614,6 +614,7 @@
 						
 						const isAuthor = item.fk_userid == item.board_id; // 게시글 작성자와 댓글 작성자가 같은지
 						const isCurrentUser = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.userid}" == item.fk_userid); // 댓글 작성자와 현재 로그인한 사용자가 같은지
+						const isAdmin = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.status}" == 0);
 						const widthStyle = item.depthno > 0 ? '95%' : '100%';
 						const isReply = item.depthno > 0; // 답글일 경우 
 						
@@ -659,6 +660,15 @@
 												</div>
 												<div class="commentOption">
 													<span id="editComment" style="border-bottom: solid 1px #f2f2f2;">수정</span>
+													<span id="delComment" style="color: #ff4d4d;">삭제</span>
+												</div>
+											` : ``}
+											
+											\${isAdmin ? `
+												<div class="commentOptionBtn">
+													<i class="fa-solid fa-ellipsis-vertical"></i>
+												</div>
+												<div class="commentOption">
 													<span id="delComment" style="color: #ff4d4d;">삭제</span>
 												</div>
 											` : ``}
@@ -792,6 +802,8 @@
 		
 		if (newCount <= 0) {
 	        $("span#commentCount").text("댓글 쓰기"); // 댓글 수가 0 이하일 때
+	        history.go(0);
+	        
 	    } else {
 	        $("span#commentCount").text("댓글 " + newCount); // 댓글 수 업데이트
 	    }
@@ -844,7 +856,7 @@
 					<c:if test="${not empty sessionScope.loginUser && sessionScope.loginUser.status == 0}">
 						<span id="editDelBtn" class="ml-3"><i class="fa-solid fa-ellipsis-vertical"></i></span>
 						<div class="editDelDiv text-center" style="height: 42px;">
-							<a id="delBtn" style="color: #ff4d4d;">삭제하기 <i class="fa-solid fa-trash-can ml-2"></i></a>
+							<a id="delBtn" href="javascript:goDeleteBoard()" style="color: #ff4d4d;">삭제하기 <i class="fa-solid fa-trash-can ml-2"></i></a>
 						</div>
 					</c:if>
 				</div>
