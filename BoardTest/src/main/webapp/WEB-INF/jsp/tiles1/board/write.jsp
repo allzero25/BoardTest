@@ -108,8 +108,6 @@
 
 	$(document).ready(function() {
 		
-		let selectedImages = []; // 선택된 이미지 파일 목록
-		
 		// 이미지 미리보기
 	    $("input#attachInput").on("change", function(event) {
 	    	
@@ -117,11 +115,15 @@
 	        const previewContainer = $("div#previewContainer");
 	        previewContainer.empty(); // 미리보기 초기화
 	        
-	        selectedImages = []; // 선택된 이미지 초기화
-	        
+	        let selectedImages = []; // 선택된 이미지 파일 목록 초기화
 	        const validFiles = []; // 유효한 이미지 파일을 저장할 배열
-
+	        
 	        $.each(files, function(index, file) {
+	        	
+	        	if(validFiles.length >= 10) {
+	        		alert("파일은 10개까지만 첨부 가능합니다.");
+	        		return false;
+	        	}
 
 	        	if(file.type !== "image/jpeg" && file.type !== "image/png") {
 	        		alert("jpg 또는 png 파일만 첨부 가능합니다.");
