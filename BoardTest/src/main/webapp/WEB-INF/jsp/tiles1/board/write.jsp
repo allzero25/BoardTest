@@ -23,6 +23,14 @@
 	    div#previewContainer {
 	    	grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
 	    }
+	    
+	    div#btnDiv {
+	    	margin-top: 10% !important;
+	    }
+	    
+	    div#btnDiv button {
+	    	width: 100px !important;
+	    }
 	}
 
 	div.writeBoardDiv {
@@ -87,14 +95,10 @@
 	    background-color: rgba(255, 255, 255, 0.7);
 	    border: none;
 	    border-radius: 50%;
-	    /* width: 15%;
-	    height: 20px;
-	    line-height: 20px; */
 	    font-weight: bold;
 	}
 	
 	div#btnDiv {
-		border: solid 0px blue;
 		text-align: center;
 		margin: 5% 0;
 	}

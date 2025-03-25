@@ -24,6 +24,14 @@
 	    div#previewContainer {
 	    	grid-template-columns: repeat(auto-fill, minmax(30%, 1fr)) !important;
 	    }
+	    
+	    div#btnDiv {
+	    	margin-top: 10% !important;
+	    }
+	    
+	    div#btnDiv button {
+	    	width: 100px !important;
+	    }
 	}
 
 	div.editBoardDiv {
@@ -89,9 +97,6 @@
 	    background-color: rgba(255, 255, 255, 0.7);
 	    border: none;
 	    border-radius: 50%;
-	    /* width: 15%;
-	    height: 20px;
-	    line-height: 20px; */
 	    font-weight: bold;
 	}
 	
