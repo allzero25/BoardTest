@@ -111,7 +111,22 @@
 				AND LOWER(name) LIKE CONCAT('%', LOWER(#{searchWord}), '%')
 			</when>
 		</choose>
-		ORDER BY boardSeq DESC
+		
+		<choose>
+		    <when test="sortType == 'boardSeq'">
+		        ORDER BY boardSeq DESC
+		    </when>
+		    <when test="sortType == 'readCount'">
+		        ORDER BY readCount DESC
+		    </when>
+	     	<when test="sortType == 'commentCount'">
+		        ORDER BY commentCount DESC
+		    </when>
+		    <otherwise>
+		        ORDER BY boardSeq DESC
+		    </otherwise>
+		</choose>
+		
 		LIMIT #{countPerPage} OFFSET #{offset}
 	</select>
 	

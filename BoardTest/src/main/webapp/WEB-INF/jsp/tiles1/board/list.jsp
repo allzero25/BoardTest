@@ -11,12 +11,17 @@
 	    	width: 100vw !important;
 	    }
 	    
-	    div#searchDiv {
+	    div#searchSortDiv {
 	    	margin-top: 5% !important;
+	    	width: 100vw !important;
+	    }
+	    
+	    div#searchDiv {
 	        width: 100vw !important;
 	    }
 	    
-	    div#searchDiv select {
+	    div#searchDiv select,
+	    div#sortDiv select {
 	    	width: 70px;
 	    }
 	    
@@ -43,14 +48,20 @@
 		margin: 5% auto;
 	}
 	
+	div#searchSortDiv {
+		border: solid 0px red;
+		width: 70%;
+		margin: 0 auto;
+	}
+	
 	div#searchDiv {
 		border: solid 0px blue;
 		width: 70%;
-		margin: 0 auto 3% auto;
+		margin-bottom: 3%;
 	}
 	
 	select#searchType {
-		width: 10%;
+		width: 13%;
 		border: solid 1px #a6a6a6;
 		border-radius: 5px;
 	}
@@ -58,6 +69,19 @@
 	input#searchWord {
 		border: solid 1px #a6a6a6;
 		border-radius: 5px;
+	}
+	
+	div#sortDiv {
+		border: solid 0px green;
+		width: 30%;
+		text-align: right;
+	}
+	
+	select#sortType {
+		width: 30%;
+		border: solid 1px #a6a6a6;
+		border-radius: 5px;
+		height: 40px;
 	}
 	
 	div.boardContainer {
@@ -180,13 +204,21 @@
 			}
 		});
 		
+		$("select#sortType").change(function() {
+			const frm = document.searchSortFrm;
+			frm.submit();
+		});
+		
 		if(${not empty requestScope.paraMap}) {
 			$("select#searchType").val("${requestScope.paraMap.searchType}");
 			$("input#searchWord").val("${requestScope.paraMap.searchWord}");
+			$("select#sortType").val("${requestScope.paraMap.sortType}");
 		}
 		
 	});
 	
+	
+	// 게시판 검색
 	function goSearch() {
 		
 		const searchWord = $("input#searchWord").val().trim();
@@ -197,9 +229,10 @@
 			return;
 		}
 		
-		const frm = document.searchFrm;
+		const frm = document.searchSortFrm;
 		frm.submit();
 	}
+	
 	
 	// 글 상세페이지
 	function goDetail(boardSeq) {
@@ -211,9 +244,10 @@
 		frm.boardSeq.value = boardSeq;
 		frm.goBackURL.value = goBackURL;
 		
-		if(${not empty requestScope.paraMap}) { // 검색 조건이 있을 경우
+		if(${not empty requestScope.paraMap}) { // 검색, 정렬 조건이 있을 경우
 			frm.searchType.value = "${requestScope.paraMap.searchType}";
 			frm.searchWord.value = "${requestScope.paraMap.searchWord}";
+			frm.sortType.value = "${requestScope.paraMap.sortType}";
 		}
 		
 		frm.method = "post";
@@ -225,15 +259,24 @@
 
 <div class="container">
 
-	<form name="searchFrm">
-		<div id="searchDiv" class="d-flex">
-			<select id="searchType" name="searchType" class="mr-3">
-				<option value="subject" selected>글제목</option>
-				<option value="content">글내용</option>
-				<option value="name">작성자</option>
-			</select>
-			<input type="text" name="searchWord" id="searchWord" class="mr-3" maxlength="15">
-			<button type="button" id="searchBtn" onclick="goSearch()" class="btn btn-outline-primary"><i class="fa-solid fa-magnifying-glass mr-2"></i>검색</button>
+	<form name="searchSortFrm">
+		<div id="searchSortDiv" class="d-flex justify-content-between">
+			<div id="searchDiv" class="d-flex">
+				<select id="searchType" name="searchType" class="mr-3">
+					<option value="subject" selected>글제목</option>
+					<option value="content">글내용</option>
+					<option value="name">작성자</option>
+				</select>
+				<input type="text" name="searchWord" id="searchWord" class="mr-3" maxlength="15">
+				<button type="button" id="searchBtn" onclick="goSearch()" class="btn btn-outline-primary"><i class="fa-solid fa-magnifying-glass mr-2"></i>검색</button>
+			</div>
+			<div id="sortDiv">
+				<select id="sortType" name="sortType">
+					<option value="boardSeq" selected>최신순</option>
+					<option value="readCount">조회순</option>
+					<option value="commentCount">댓글순</option>
+				</select>
+			</div>
 		</div>
 	</form>
 	
@@ -325,4 +368,5 @@
 	<input type="hidden" name="goBackURL">
 	<input type="hidden" name="searchType">
 	<input type="hidden" name="searchWord">
+	<input type="hidden" name="sortType">
 </form>
