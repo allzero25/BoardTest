@@ -1,4 +1,4 @@
-commentSeqselect * from tbl_board order by boardSeq desc;
+select * from tbl_board order by boardSeq desc;
 select * from tbl_board_img order by imgSeq DESC;
 SELECT * FROM tbl_member ORDER BY registerday DESC;
 
