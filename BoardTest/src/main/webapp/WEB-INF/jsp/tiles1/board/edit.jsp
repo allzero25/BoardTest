@@ -24,6 +24,14 @@
 	    div#previewContainer {
 	    	grid-template-columns: repeat(auto-fill, minmax(30%, 1fr)) !important;
 	    }
+	    
+	    div#btnDiv {
+	    	margin-top: 10% !important;
+	    }
+	    
+	    div#btnDiv button {
+	    	width: 100px !important;
+	    }
 	}
 
 	div.editBoardDiv {
@@ -89,9 +97,6 @@
 	    background-color: rgba(255, 255, 255, 0.7);
 	    border: none;
 	    border-radius: 50%;
-	    /* width: 15%;
-	    height: 20px;
-	    line-height: 20px; */
 	    font-weight: bold;
 	}
 	
@@ -115,8 +120,6 @@
 		$("textarea#content").val(formattedContent);
 		
 
-		let selectedImages = []; // 선택된 이미지 파일 목록
-		
 		// 이미지 미리보기
 	    $("input#attachInput").on("change", function(event) {
 	    	
@@ -124,11 +127,24 @@
 	        const previewContainer = $("div#previewContainer");
 	        previewContainer.empty(); // 미리보기 초기화
 	        
-	        selectedImages = Array.from(files); // 선택된 파일을 배열에 추가
-
+	        let selectedImages = []; // 선택된 이미지 파일 목록 초기화
+	        const validFiles = []; // 유효한 이미지 파일을 저장할 배열
+	        
 	        $.each(files, function(index, file) {
+	        	
+	        	if(validFiles.length >= 10) {
+	        		alert("파일은 10개까지만 첨부 가능합니다.");
+	        		return false;
+	        	}
+
+	        	if(file.type !== "image/jpeg" && file.type !== "image/png") {
+	        		alert("jpg 또는 png 파일만 첨부 가능합니다.");
+	        		return;
+	        	}
+	        	
+	        	validFiles.push(file); // 유효한 파일을 배열에 추가
+	        	
 	            const reader = new FileReader();
-	            
 	            reader.readAsDataURL(file); // 파일을 읽어 Data URL로 변환
 	            
 	            reader.onload = function(e) {
@@ -152,7 +168,15 @@
 	                previewContainer.append(imgWrapper); // 미리보기 컨테이너에 이미지 래퍼 추가
 	            }
 	        });
+	        
+	        selectedImages = validFiles; // 유효한 파일 목록 업데이트
+	        
+	        // 파일 input의 파일 목록 업데이트 (유효한 파일만)
+	        const dataTransfer = new DataTransfer();
+	        selectedImages.forEach(img => dataTransfer.items.add(img)); // 선택된 파일들을 DataTransfer에 추가
+	        document.getElementById('attachInput').files = dataTransfer.files; // input의 파일 목록 업데이트
 	    });
+		
 	    
 		// 취소 버튼 클릭 시
 		$("button#goBackBtn").click(function() {

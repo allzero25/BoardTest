@@ -11,6 +11,16 @@
 	        width: 100% !important;
 	    }
 	    
+	    span#editDelBtn {
+	    	position: relative;
+	    }
+	    
+	    div.editDelDiv {
+	    	position: absolute;
+			width: 110px !important;
+			margin-left: 20% !important;
+	    }
+	    
 	    div#commentBtn {
 	    	width: 120px !important;
 	    }
@@ -217,6 +227,7 @@
 	input,
 	textarea {
 		border: none;
+		resize: none;
 	}
 	
 	input:focus,
@@ -522,6 +533,25 @@
 			
 		});
 		
+		
+		// 로그인을 하지 않았을 경우 댓글창 클릭 시
+		$("textarea#goLogin").on("click", function() {
+			$.ajax({
+				url: "<%=ctxPath%>/board/saveGoBackURL.do",
+				type: "post",
+				data: {"boardSeq":"${requestScope.board.boardSeq}"},
+				dataType: "json",
+				success: function(json) {
+					if(json.goBackURL != null) {
+						location.href = "<%=ctxPath%>/member/login.do";
+					}
+				},
+				error: function(request, status, error) {
+	                alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	            }
+			});
+		});
+		
 	}); // end of $(document).ready(function() {}) ---------------------------------
 	
 	
@@ -614,6 +644,7 @@
 						
 						const isAuthor = item.fk_userid == item.board_id; // 게시글 작성자와 댓글 작성자가 같은지
 						const isCurrentUser = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.userid}" == item.fk_userid); // 댓글 작성자와 현재 로그인한 사용자가 같은지
+						const isAdmin = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.status}" == 0);
 						const widthStyle = item.depthno > 0 ? '95%' : '100%';
 						const isReply = item.depthno > 0; // 답글일 경우 
 						
@@ -663,6 +694,15 @@
 												</div>
 											` : ``}
 											
+											\${isAdmin ? `
+												<div class="commentOptionBtn">
+													<i class="fa-solid fa-ellipsis-vertical"></i>
+												</div>
+												<div class="commentOption">
+													<span id="delComment" style="color: #ff4d4d;">삭제</span>
+												</div>
+											` : ``}
+											
 											</div>
 											<div class="cmt_content">\${item.content}</div>
 											<div class="cmt_regDate">\${item.regDate}</div>
@@ -687,11 +727,17 @@
 					const totalPage = Math.ceil(json[0].totalCount / json[0].countPerPage);
 					
 					createCommentPageBar(currentShowPageNo, totalPage);
+					
 				}
-				
 			},
 			error: function(request, status, error) {
-                alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+				
+				if(request.status == 404) {
+					location.href = "list.do";
+					
+				} else {
+	                alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+				}
             }
 		});
 	} // end of function getCommentList(currentShowPageNo) --------------------------
@@ -792,6 +838,8 @@
 		
 		if (newCount <= 0) {
 	        $("span#commentCount").text("댓글 쓰기"); // 댓글 수가 0 이하일 때
+	        history.go(0);
+	        
 	    } else {
 	        $("span#commentCount").text("댓글 " + newCount); // 댓글 수 업데이트
 	    }
@@ -844,7 +892,7 @@
 					<c:if test="${not empty sessionScope.loginUser && sessionScope.loginUser.status == 0}">
 						<span id="editDelBtn" class="ml-3"><i class="fa-solid fa-ellipsis-vertical"></i></span>
 						<div class="editDelDiv text-center" style="height: 42px;">
-							<a id="delBtn" style="color: #ff4d4d;">삭제하기 <i class="fa-solid fa-trash-can ml-2"></i></a>
+							<a id="delBtn" href="javascript:goDeleteBoard()" style="color: #ff4d4d;">삭제하기 <i class="fa-solid fa-trash-can ml-2"></i></a>
 						</div>
 					</c:if>
 				</div>
@@ -1041,7 +1089,7 @@
 							</div>
 						</c:if>
 						<c:if test="${empty sessionScope.loginUser}">
-							<textarea id="goLogin" onclick="location.href='<%=ctxPath%>/member/login.do'" style="margin: 1% 0; resize: none;" rows="5" placeholder="댓글을 작성하려면 로그인하세요." readonly></textarea>
+							<textarea id="goLogin" style="margin: 1% 0; resize: none;" rows="5" placeholder="댓글을 작성하려면 로그인하세요." readonly></textarea>
 						</c:if>
 					</div>
 				</form>

@@ -39,4 +39,32 @@ public class CommonUtil {
 		
 		return content;
 	}
+	
+	
+	// 쿼리스트링을 포함한 이전페이지 URL 주소 가져오기
+	public static String getPreviousURL(HttpServletRequest request) {
+		
+		String prevURL = request.getHeader("Referer");
+		
+		String queryString = request.getQueryString();
+		// POST일 경우 queryString = null
+		
+		if(queryString != null) {
+			prevURL += "?" + queryString;
+		}
+		
+		String ctxPath = request.getContextPath();
+		
+		int beginIndex = prevURL.indexOf(ctxPath) + ctxPath.length();
+		
+		prevURL = prevURL.substring(beginIndex);
+		
+		if(prevURL == null) {
+			prevURL = ctxPath + "/";
+		}
+		
+		return prevURL;
+	}
+	
+	
 }

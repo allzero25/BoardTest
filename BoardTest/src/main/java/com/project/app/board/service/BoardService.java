@@ -15,7 +15,7 @@ public interface BoardService {
 	ModelAndView writeBoard(ModelAndView mav, BoardRequestDTO bdto);
 
 	// 글 목록 페이지
-	ModelAndView list(ModelAndView mav, String searchType, String searchWord, String str_currentPageNo);
+	ModelAndView list(ModelAndView mav, Map<String, Object> paraMap);
 
 	// 조회수 1 증가 + 해당 글 조회
 	BoardVO getBoard(Map<String, Object> paraMap);

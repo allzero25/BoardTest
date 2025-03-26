@@ -89,16 +89,17 @@ public class BoardService_impl implements BoardService {
 
 	// 글 목록 페이지
 	@Override
-	public ModelAndView list(ModelAndView mav, String searchType, String searchWord, String str_currentShowPageNo) {
+	public ModelAndView list(ModelAndView mav, Map<String, Object> paraMap) {
+		
+		String searchType = (String)paraMap.get("searchType");
+		String searchWord = (String)paraMap.get("searchWord");
+		String sortType = (String)paraMap.get("sortType");
+		String str_currentShowPageNo = (String)paraMap.get("str_currentShowPageNo");
 		
 		int totalCount = 0,	   // 총 게시물 수
 			countPerPage = 5,  // 한 페이지당 게시물 수
 			currentShowPageNo = 0, // 현재 페이지 번호
 			totalPage = 0; 	   // 총 페이지 수
-		
-		Map<String, Object> paraMap = new HashMap<>();
-		paraMap.put("searchType", searchType);
-		paraMap.put("searchWord", searchWord);
 		
 		// 총 게시물 수 가져오기
 		totalCount = boardDao.getTotalCount(paraMap);
@@ -131,14 +132,13 @@ public class BoardService_impl implements BoardService {
 		List<BoardVO> boardList = boardDao.getBoardList(paraMap);
 		mav.addObject("boardList", boardList);
 		
-		// 검색 시 검색타입, 검색어 유지하기 위함
-		if("subject".equals(searchType) ||
-		   "content".equals(searchType) ||
-		   "name".equals(searchType)) {
+		// 검색 시 검색타입, 검색어, 정렬조건 유지하기 위함
+		if(("subject".equals(searchType) || "content".equals(searchType) || "name".equals(searchType)) && 
+			("boardSeq".equals(sortType) || "readCount".equals(sortType) || "commentCount".equals(sortType))) {
 			
 			mav.addObject("paraMap", paraMap);
 		}
-
+		
 		// 페이지 바 만들기
 		int blockSize = 10;
 		
