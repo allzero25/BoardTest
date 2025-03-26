@@ -16,6 +16,8 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -134,9 +136,16 @@ public class BoardController {
 		
 		String searchType = request.getParameter("searchType");
 		String searchWord = request.getParameter("searchWord");
+		String sortType = request.getParameter("sortType");
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		
-		mav = boardService.list(mav, searchType, searchWord, str_currentShowPageNo);
+		Map<String, Object> paraMap = new HashMap<>();
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		paraMap.put("sortType", sortType);
+		paraMap.put("str_currentShowPageNo", str_currentShowPageNo);
+		
+		mav = boardService.list(mav, paraMap);
 		
 		// 게시판 검색->글 상세페이지 본 이후 <검색된 결과 목록 보기> 클릭 시 현재 페이지를 알기 위함
 		String goBackURL = CommonUtil.getCurrentURL(request);
@@ -338,21 +347,36 @@ public class BoardController {
 		String path = root + "resources" + File.separator + "images" + File.separator + "board";
 		
 		MultipartFile[] attachArr = boardvo.getAttach();
+//		System.out.println("attachArr.length : " + attachArr.length);
 		
 		if(attachArr != null && attachArr.length > 0) {
-
-			// 새로 첨부된 파일이 있는 경우 원래 있던 파일을 서버에서 삭제하기
-			try {
-				List<Map<String, String>> boardImgList = boardService.getBoardImgList(boardvo.getBoardSeq());
-				
-				if(boardImgList != null) {
-					for(Map<String, String> boardImgMap : boardImgList) {
-						fileManager.deleteFile(boardImgMap.get("filename"), path);
-					}
-				}
 			
-			} catch (Exception e) {
-				e.printStackTrace();
+			// 빈 파일이 있는지 확인
+			boolean hasValidFile = false;
+			
+			for(MultipartFile file : attachArr) {
+				if(!file.isEmpty()) {
+					hasValidFile = true;
+					break;
+				}
+			}
+			
+//			System.out.println("hasValidFile : " + hasValidFile);
+
+			if(hasValidFile) {
+				// 새로 첨부된 파일이 있는 경우 원래 있던 파일을 서버에서 삭제하기
+				try {
+					List<Map<String, String>> boardImgList = boardService.getBoardImgList(boardvo.getBoardSeq());
+					
+					if(boardImgList != null) {
+						for(Map<String, String> boardImgMap : boardImgList) {
+							fileManager.deleteFile(boardImgMap.get("filename"), path);
+						}
+					}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			
 			String[] fileNameArr = new String[attachArr.length]; // 첨부파일명을 저장시키는 용도
@@ -435,7 +459,7 @@ public class BoardController {
 	// 댓글 목록 불러오기
 	@ResponseBody
 	@GetMapping(value="commentList.do", produces="text/plain;charset=UTF-8")
-	public String commentList(@RequestParam(defaultValue = "") String fk_boardSeq,
+	public ResponseEntity<String> commentList(@RequestParam(defaultValue = "") String fk_boardSeq,
 							  @RequestParam(defaultValue = "") String currentShowPageNo) {
 		
 		if("".equals(currentShowPageNo))
@@ -457,6 +481,10 @@ public class BoardController {
 		paraMap.put("searchWord", "");
 		paraMap.put("boardSeq", fk_boardSeq);
 		BoardVO boardvo = boardService.getBoardNoReadCount(paraMap); // 게시글 작성자 아이디를 알기 위함
+		
+		if(boardvo == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시물이 없습니다.");
+		}
 		
 		int totalCount = Integer.parseInt(boardvo.getCommentCount());
 		
@@ -487,7 +515,7 @@ public class BoardController {
 			}
 		}
 		
-		return jsonArr.toString();
+		return ResponseEntity.ok(jsonArr.toString());
 		
 	} // end of public String commentList(@RequestParam(defaultValue = "") String fk_boardSeq, @RequestParam(defaultValue = "") String currentShowPageNo) -------
 	

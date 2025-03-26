@@ -227,6 +227,7 @@
 	input,
 	textarea {
 		border: none;
+		resize: none;
 	}
 	
 	input:focus,
@@ -726,11 +727,17 @@
 					const totalPage = Math.ceil(json[0].totalCount / json[0].countPerPage);
 					
 					createCommentPageBar(currentShowPageNo, totalPage);
+					
 				}
-				
 			},
 			error: function(request, status, error) {
-                alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+				
+				if(request.status == 404) {
+					location.href = "list.do";
+					
+				} else {
+	                alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+				}
             }
 		});
 	} // end of function getCommentList(currentShowPageNo) --------------------------
