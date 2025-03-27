@@ -322,6 +322,9 @@
 		<%-- 댓글 옵션 토글 버튼 (댓글 수정/삭제) --%>
 		$(document).on("click", "div.commentOptionBtn", function(e) {
 			e.stopPropagation(); // 이벤트 버블링 방지
+			
+			$("div.commentOption").hide(); // 다른 댓글에 commentOption이 열렸다면 숨기기
+			
         	$(this).next("div.commentOption").toggle();
 		});
 		
