@@ -4,6 +4,8 @@
 
 <mapper namespace="mapper">
 	
+	<!-- ===== tbl_member ===== -->
+	
 	<!-- 아이디에 대한 회원정보 가져오기 -->
 	<select id="getMemberById" parameterType="String" resultType="MemberVO">
 		select userid, name, email, phone, birthday, gender, registerday, status
@@ -16,6 +18,13 @@
 		select userid, name, email, phone, birthday, gender, registerday, status
 		from tbl_member
 		where email = #{email}
+	</select>
+	
+	<!-- 휴대폰에 대한 회원정보 가져오기 -->
+	<select id="getMemberByPhone" parameterType="String" resultType="MemberVO">
+		select userid, name, email, phone, birthday, gender, registerday, status
+		from tbl_member
+		where phone = #{phone}
 	</select>
 	
 	<!-- 회원가입 처리하기 (tbl_member 테이블 insert) -->
@@ -51,6 +60,8 @@
 		set password = #{password}
 		where userid = #{userid}
 	</update>
+	
+	
 	
 	
 	<!-- ===== tbl_board ===== -->

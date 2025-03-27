@@ -65,6 +65,21 @@ public class MemberService_impl implements MemberService {
 	}
 
 	
+	// 회원가입: 휴대폰 중복확인
+	@Override
+	public boolean phoneDuplicateCheck(String phone) {
+		
+		boolean isExist = false;
+		
+		MemberVO member = memberDao.getMemberByPhone(phone); // 휴대폰에 대한 회원정보 가져오기
+		
+		if(member != null)
+			isExist = true;
+		
+		return isExist;
+	}
+
+	
 	// 회원가입 처리하기
 	@Override
 	public int signUp(MemberVO mvo) {
@@ -174,6 +189,7 @@ public class MemberService_impl implements MemberService {
 		
 		return n;
 	}
+
 
 	
 }

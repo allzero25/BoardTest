@@ -67,6 +67,22 @@ public class MemberController {
     } // end of public String emailDuplicateCheck(HttpServletRequest request) -------------
     
     
+    // 회원가입: 휴대폰 중복확인
+    @ResponseBody
+    @PostMapping(value="phoneDuplicateCheck.do", produces="text/plain;charset=UTF-8")
+    public String phoneDuplicateCheck(HttpServletRequest request) {
+    	
+    	String phone = request.getParameter("phone");
+    	
+    	boolean isExist = memberService.phoneDuplicateCheck(phone);
+    	
+    	JSONObject jsonObj = new JSONObject();
+    	jsonObj.put("isExist", isExist);
+    	
+    	return jsonObj.toString();
+    } // end of public String phoneDuplicateCheck(HttpServletRequest request) -------------
+    
+    
     // 회원가입 처리하기
     @ResponseBody
     @PostMapping(value="signUp.do", produces="text/plain;charset=UTF-8")
