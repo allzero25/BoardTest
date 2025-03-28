@@ -239,8 +239,8 @@
 		
 		<!-- 답댓글일 경우 -->
 		<if test="fk_seq != null">
-			insert into tbl_comment(fk_userid, name, content, fk_boardSeq, groupno, fk_seq, depthno)
-			values(#{fk_userid}, #{name}, #{content}, #{fk_boardSeq}, #{groupno}, #{fk_seq}, #{depthno}+1)
+			insert into tbl_comment(fk_userid, name, content, fk_boardSeq, groupno, fk_seq)
+			values(#{fk_userid}, #{name}, #{content}, #{fk_boardSeq}, #{groupno}, #{fk_seq})
 		</if>
 	</insert>
 	
@@ -256,7 +256,7 @@
 		WITH RECURSIVE comment_tree AS (
 		    SELECT commentSeq, fk_userid, name, content, 
 		           DATE_FORMAT(regDate, '%Y-%m-%d %H:%i') AS regDate, 
-		           fk_boardSeq, status, groupno, fk_seq, depthno
+		           fk_boardSeq, status, groupno, fk_seq
 		    FROM tbl_comment
 		    WHERE fk_seq = 0 AND (STATUS = 1 
 			 		OR (STATUS = 0 AND EXISTS (
@@ -271,7 +271,7 @@
 		
 		    SELECT c.commentSeq, c.fk_userid, c.name, c.content, 
 		           DATE_FORMAT(c.regDate, '%Y-%m-%d %H:%i'), 
-		           c.fk_boardSeq, c.status, c.groupno, c.fk_seq, c.depthno
+		           c.fk_boardSeq, c.status, c.groupno, c.fk_seq
 		    FROM tbl_comment c
 		    INNER JOIN comment_tree ct ON ct.commentSeq = c.fk_seq
 		    WHERE c.status = 1

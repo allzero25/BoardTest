@@ -397,7 +397,6 @@
 								<input type="hidden" name="fk_boardSeq" value="${requestScope.board.boardSeq}" readonly>
 								<input type="hidden" name="groupno">
 								<input type="hidden" name="fk_seq">
-								<input type="hidden" name="depthno">
 								<div style="text-align: right; margin-top: 2%;">
 									<button id="writeReplyBtn" type="button" class="btn" onclick="goWriteReply(this)">등록</button>
 								</div>
@@ -662,8 +661,8 @@
 						const isAuthor = item.fk_userid == item.board_id; // 게시글 작성자와 댓글 작성자가 같은지
 						const isCurrentUser = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.userid}" == item.fk_userid); // 댓글 작성자와 현재 로그인한 사용자가 같은지
 						const isAdmin = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.status}" == 0);
-						const widthStyle = item.depthno > 0 ? '95%' : '100%';
-						const isReply = item.depthno > 0; // 답글일 경우 
+						const widthStyle = item.fk_seq != 0 ? '95%' : '100%';
+						const isReply = item.fk_seq != 0; // 답글일 경우 
 						
 						if(item.status == 0) {
 
@@ -680,7 +679,6 @@
 										</div>
 										<input type="hidden" value="\${currentShowPageNo}" class="currentShowPageNo">
 										<input type="hidden" value="\${item.groupno}" name="groupno">
-										<input type="hidden" value="\${item.depthno}" name="depthno">
 									</div>`;
 								}
 							
@@ -729,7 +727,6 @@
 									</div>
 									<input type="hidden" value="\${currentShowPageNo}" class="currentShowPageNo">
 									<input type="hidden" value="\${item.groupno}" name="groupno">
-									<input type="hidden" value="\${item.depthno}" name="depthno">
 									<div class="writeReplyDiv"></div>
 								</div>`;
 						
@@ -814,15 +811,13 @@
 		
 		const groupno = $(button).closest("div.comment").find("input[name=groupno]").val(); // 그룹번호 (원댓글과 답댓글은 같은 그룹번호를 가짐)
 		const fk_seq = $(button).closest("div.comment").find("input#cmt_seq").val(); // 원댓글 번호
-		const depthno = $(button).closest("div.comment").find("input[name=depthno]").val(); // 원댓글:0, 답댓글:원댓글의 depthno+1
 		const currentShowPageNo = $(button).closest("div.comment").find("input.currentShowPageNo").val(); // 현재 페이지 번호
 		
-//		console.log("groupno : " + groupno + ", fk_seq : " + fk_seq + ", depthno : " + depthno + ", currentShowPageNo : " + currentShowPageNo);
+//		console.log("groupno : " + groupno + ", fk_seq : " + fk_seq + ", currentShowPageNo : " + currentShowPageNo);
 		
 		const frm = document.writeReplyFrm;
 		frm.groupno.value = groupno;
 		frm.fk_seq.value = fk_seq;
-		frm.depthno.value = depthno;
 		
 		const queryString = $("form[name='writeReplyFrm']").serialize();
 		

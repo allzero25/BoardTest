@@ -1,4 +1,4 @@
-commentSeqselect * from tbl_board order by boardSeq desc;
+select * from tbl_board order by boardSeq desc;
 select * from tbl_board_img order by imgSeq DESC;
 SELECT * FROM tbl_member ORDER BY registerday DESC;
 
@@ -11,21 +11,33 @@ CREATE TABLE tbl_member (
     name VARCHAR(20) NOT NULL,
     email VARCHAR(200) NOT NULL,
     password VARCHAR(200) NOT NULL,
-    phone VARCHAR(200) NOT NULL,
+    phone VARCHAR(11) NOT NULL,
     birthday VARCHAR(10),
     gender TINYINT(1),
     registerday DATETIME DEFAULT CURRENT_TIMESTAMP,
     status TINYINT(1) DEFAULT 1 NOT NULL,
     primary key (userid),
+    CONSTRAINT UNIQUE_TBL_MEMBER_EMAIL unique(email),
+    CONSTRAINT UNIQUE_TBL_MEMBER_PHONE unique(phone),
     CONSTRAINT CK_TBL_MEMBER_STATUS CHECK (status IN (0, 1))
 );
 */
 
--- email 컬럼 unique 제약조건 추가
 /*
+-- email 컬럼 unique 제약조건 추가
 alter table tbl_member
 add constraint UNIQUE_TBL_MEMBER_EMAIL unique(email);
+
+-- phone 컬럼 타입 varchar(200) -> varchar(11) 변경
+ALTER TABLE tbl_member
+MODIFY phone VARCHAR(11); 
+
+-- phone 컬럼 unique 제약조건 추가
+alter table tbl_member
+add constraint UNIQUE_TBL_MEMBER_PHONE unique(phone);
 */
+
+
 
 
 -- 게시판 테이블 생성
@@ -74,7 +86,6 @@ CREATE TABLE tbl_comment (
     status TINYINT DEFAULT 1 NOT NULL,  -- 0일 경우: 삭제
     groupno INT NOT NULL, -- 원댓글과 답댓글은 동일한 groupno를 가짐
     fk_seq INT DEFAULT 0 NOT NULL, -- (답댓글일 경우)원댓글의 seq번호
-    depthno INT DEFAULT 0 NOT NULL, -- 답댓글일 경우 원댓글의 depthno + 1, 원댓글일 경우 0
     CONSTRAINT PK_TBL_COMMENT_SEQ PRIMARY KEY (commentSeq),
     CONSTRAINT FK_TBL_COMMENT_USERID FOREIGN KEY (fk_userid) REFERENCES tbl_member(userid) on delete cascade,
     CONSTRAINT FK_TBL_COMMENT_BOARDSEQ FOREIGN KEY (fk_boardSeq) REFERENCES tbl_board(boardSeq) on delete cascade,
@@ -83,6 +94,8 @@ CREATE TABLE tbl_comment (
 */
 
 
+ALTER TABLE tbl_comment
+DROP COLUMN depthno;
 
 
 
@@ -155,6 +168,49 @@ FROM
 	#AND LOWER(NAME) LIKE CONCAT('%', LOWER('다'), '%')
 ) V
 WHERE V.boardSeq = 5;
+
+
+
+### 글 1개 조회하기 ★최종★ (검색, 정렬 O)
+SELECT prevSeq, prevSubject,
+       boardSeq, fk_userid, name, subject, content, readCount, regDate, commentCount,
+       nextSeq, nextSubject
+FROM
+(
+    SELECT boardSeq, fk_userid, name, subject, content, readCount, 
+           date_format(regDate, '%Y-%m-%d %H:%i') AS regDate, commentCount,
+           LAG(boardSeq) OVER(ORDER BY 
+               CASE 
+                   WHEN 'readCount' = 'readCount' THEN readCount
+                   WHEN 'readCount' = 'commentCount' THEN commentCount
+                   ELSE boardSeq
+               END DESC) AS prevSeq,
+           LAG(subject) OVER(ORDER BY 
+               CASE 
+                   WHEN 'readCount' = 'readCount' THEN readCount
+                   WHEN 'readCount' = 'commentCount' THEN commentCount
+                   ELSE boardSeq
+               END DESC) AS prevSubject,
+           LEAD(boardSeq) OVER(ORDER BY 
+               CASE 
+                   WHEN 'readCount' = 'readCount' THEN readCount
+                   WHEN 'readCount' = 'commentCount' THEN commentCount
+                   ELSE boardSeq
+               END DESC) AS nextSeq,
+           LEAD(subject) OVER(ORDER BY 
+               CASE 
+                   WHEN 'readCount' = 'readCount' THEN readCount
+                   WHEN 'readCount' = 'commentCount' THEN commentCount
+                   ELSE boardSeq
+               END DESC) AS nextSubject
+    FROM tbl_board
+    WHERE STATUS = 1
+    AND LOWER(NAME) LIKE CONCAT('%', LOWER('다영'), '%')
+) V
+WHERE V.boardSeq = 11;
+
+
+
 
 
 
@@ -279,7 +335,7 @@ LIMIT 5 OFFSET 0;
 
 SELECT *
 FROM tbl_comment
-WHERE fk_boardSeq = 16
+#WHERE fk_boardSeq = 19
 ORDER BY commentSeq DESC;
 
 
@@ -291,6 +347,10 @@ ORDER BY fk_boardSeq DESC;
 SELECT *
 FROM tbl_board
 ORDER BY boardSeq DESC;
+
+
+
+
 
 
 
