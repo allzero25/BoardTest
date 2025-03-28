@@ -29,9 +29,6 @@
 	    	margin-top: 10% !important;
 	    }
 	    
-	    div#btnDiv button {
-	    	width: 100px !important;
-	    }
 	}
 
 	div.editBoardDiv {
@@ -105,9 +102,11 @@
 		text-align: center;
 		margin: 5% 0;
 	}
+	
 	div#btnDiv button {
-		width: 10%;
+		width: 100px;
 	}
+	
 </style>
 
 <script type="text/javascript">
