@@ -219,6 +219,12 @@ $(function() {
                         alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
                     }
                 });
+                
+            } else {
+                $(e.target).removeClass("input_error");
+                $(e.target).next().next().removeClass("input_error");
+                $(e.target).parent().next().hide();
+                checkEmailId = true;
             }
         }
     });
