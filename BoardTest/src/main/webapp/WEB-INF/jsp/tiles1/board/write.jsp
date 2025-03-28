@@ -27,10 +27,6 @@
 	    div#btnDiv {
 	    	margin-top: 10% !important;
 	    }
-	    
-	    div#btnDiv button {
-	    	width: 100px !important;
-	    }
 	}
 
 	div.writeBoardDiv {
@@ -102,8 +98,9 @@
 		text-align: center;
 		margin: 5% 0;
 	}
+	
 	div#btnDiv button {
-		width: 10%;
+		width: 100px;
 	}
 	
 </style>
