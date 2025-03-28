@@ -25,6 +25,11 @@ public class MemberDAO {
 	public MemberVO getMemberByEmail(String email) {
 		return sqlSession.selectOne("mapper.getMemberByEmail", email);
 	}
+	
+	// 휴대폰에 대한 회원정보 가져오기
+	public MemberVO getMemberByPhone(String phone) {
+		return sqlSession.selectOne("mapper.getMemberByPhone", phone);
+	}
 
 	// 회원가입 처리 (tbl_member 테이블 insert)
 	public int signUp(MemberVO mvo) {
@@ -50,6 +55,5 @@ public class MemberDAO {
 	public int pwUpdate(Map<String, String> paraMap) {
 		return sqlSession.update("mapper.pwUpdate", paraMap);
 	}
-	
 	
 }

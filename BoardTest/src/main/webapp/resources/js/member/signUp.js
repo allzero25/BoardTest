@@ -86,7 +86,6 @@ $(function() {
                     alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
                 }
             });
-
         }
     });
 
@@ -220,6 +219,12 @@ $(function() {
                         alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
                     }
                 });
+                
+            } else {
+                $(e.target).removeClass("input_error");
+                $(e.target).next().next().removeClass("input_error");
+                $(e.target).parent().next().hide();
+                checkEmailId = true;
             }
         }
     });
@@ -276,9 +281,30 @@ $(function() {
             checkPhone = false;
 
         } else {
-            $(e.target).removeClass("input_error");
-            $(e.target).next().hide();
-            checkPhone = true;
+            // 휴대폰 중복확인
+        	$.ajax({
+        		url: "phoneDuplicateCheck.do",
+                type: "post",
+                data: {"phone": phone},
+                dataType: "json",
+                success: function(json) {
+                    if(json.isExist) {
+                        $(e.target).addClass("input_error");
+                        $(e.target).next().show();
+                        $(e.target).next().text("중복된 연락처입니다. 다시 입력해주세요.");
+                        checkPhone = false;
+
+                    } else {
+                        $(e.target).removeClass("input_error");
+                        $(e.target).next().hide();
+                        checkPhone = true;                        
+                    }
+                },
+                error: function(request, status, error) {
+                    alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+                }
+        	});
+        
         }
 
     });

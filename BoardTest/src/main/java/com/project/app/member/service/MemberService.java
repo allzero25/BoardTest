@@ -13,6 +13,9 @@ public interface MemberService {
 	// 회원가입: 이메일 중복확인
 	boolean emailDuplicateCheck(String email);
 
+	// 회원가입: 휴대폰 중복확인
+	boolean phoneDuplicateCheck(String phone);
+	
 	// 회원가입 처리하기
 	int signUp(MemberVO mvo);
 
@@ -27,5 +30,5 @@ public interface MemberService {
 
 	// 비밀번호찾기: 비밀번호 변경
 	int pwUpdate(Map<String, String> paraMap);
-	
+
 }

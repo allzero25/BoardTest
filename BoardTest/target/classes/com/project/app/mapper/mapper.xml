@@ -4,6 +4,8 @@
 
 <mapper namespace="mapper">
 	
+	<!-- ===== tbl_member ===== -->
+	
 	<!-- 아이디에 대한 회원정보 가져오기 -->
 	<select id="getMemberById" parameterType="String" resultType="MemberVO">
 		select userid, name, email, phone, birthday, gender, registerday, status
@@ -16,6 +18,13 @@
 		select userid, name, email, phone, birthday, gender, registerday, status
 		from tbl_member
 		where email = #{email}
+	</select>
+	
+	<!-- 휴대폰에 대한 회원정보 가져오기 -->
+	<select id="getMemberByPhone" parameterType="String" resultType="MemberVO">
+		select userid, name, email, phone, birthday, gender, registerday, status
+		from tbl_member
+		where phone = #{phone}
 	</select>
 	
 	<!-- 회원가입 처리하기 (tbl_member 테이블 insert) -->
@@ -51,6 +60,8 @@
 		set password = #{password}
 		where userid = #{userid}
 	</update>
+	
+	
 	
 	
 	<!-- ===== tbl_board ===== -->
@@ -138,12 +149,32 @@
 		FROM
 		(
 			SELECT boardSeq, fk_userid, name, subject, content, readCount, date_format(regDate, '%Y-%m-%d %H:%i') AS regDate, commentCount,
-				   LAG(boardSeq) OVER(ORDER BY boardSeq DESC) AS prevSeq,
-				   LAG(subject) OVER(ORDER BY boardSeq DESC) AS prevSubject,
-				   LEAD(boardSeq) OVER(ORDER BY boardSeq DESC) AS nextSeq,
-				   LEAD(subject) OVER(ORDER BY boardSeq DESC) AS nextSubject
-			FROM tbl_board
-			WHERE STATUS = 1
+		           LAG(boardSeq) OVER(ORDER BY 
+		               CASE 
+		                   WHEN #{sortType} = 'readCount' THEN readCount
+		                   WHEN #{sortType} = 'commentCount' THEN commentCount
+		                   ELSE boardSeq
+		               END DESC) AS prevSeq,
+		           LAG(subject) OVER(ORDER BY 
+		               CASE 
+		                   WHEN #{sortType} = 'readCount' THEN readCount
+		                   WHEN #{sortType} = 'commentCount' THEN commentCount
+		                   ELSE boardSeq
+		               END DESC) AS prevSubject,
+		           LEAD(boardSeq) OVER(ORDER BY 
+		               CASE 
+		                   WHEN #{sortType} = 'readCount' THEN readCount
+		                   WHEN #{sortType} = 'commentCount' THEN commentCount
+		                   ELSE boardSeq
+		               END DESC) AS nextSeq,
+		           LEAD(subject) OVER(ORDER BY 
+		               CASE 
+		                   WHEN #{sortType} = 'readCount' THEN readCount
+		                   WHEN #{sortType} = 'commentCount' THEN commentCount
+		                   ELSE boardSeq
+		               END DESC) AS nextSubject
+		    FROM tbl_board
+		    WHERE STATUS = 1
 			<choose>
 				<when test="searchType == 'subject' and searchWord != ''">
 					AND LOWER(subject) LIKE CONCAT('%', LOWER(#{searchWord}), '%')
@@ -208,8 +239,8 @@
 		
 		<!-- 답댓글일 경우 -->
 		<if test="fk_seq != null">
-			insert into tbl_comment(fk_userid, name, content, fk_boardSeq, groupno, fk_seq, depthno)
-			values(#{fk_userid}, #{name}, #{content}, #{fk_boardSeq}, #{groupno}, #{fk_seq}, #{depthno}+1)
+			insert into tbl_comment(fk_userid, name, content, fk_boardSeq, groupno, fk_seq)
+			values(#{fk_userid}, #{name}, #{content}, #{fk_boardSeq}, #{groupno}, #{fk_seq})
 		</if>
 	</insert>
 	
@@ -225,7 +256,7 @@
 		WITH RECURSIVE comment_tree AS (
 		    SELECT commentSeq, fk_userid, name, content, 
 		           DATE_FORMAT(regDate, '%Y-%m-%d %H:%i') AS regDate, 
-		           fk_boardSeq, status, groupno, fk_seq, depthno
+		           fk_boardSeq, status, groupno, fk_seq
 		    FROM tbl_comment
 		    WHERE fk_seq = 0 AND (STATUS = 1 
 			 		OR (STATUS = 0 AND EXISTS (
@@ -240,7 +271,7 @@
 		
 		    SELECT c.commentSeq, c.fk_userid, c.name, c.content, 
 		           DATE_FORMAT(c.regDate, '%Y-%m-%d %H:%i'), 
-		           c.fk_boardSeq, c.status, c.groupno, c.fk_seq, c.depthno
+		           c.fk_boardSeq, c.status, c.groupno, c.fk_seq
 		    FROM tbl_comment c
 		    INNER JOIN comment_tree ct ON ct.commentSeq = c.fk_seq
 		    WHERE c.status = 1
