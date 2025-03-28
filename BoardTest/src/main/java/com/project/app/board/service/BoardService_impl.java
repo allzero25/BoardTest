@@ -151,8 +151,8 @@ public class BoardService_impl implements BoardService {
 		
 		// 맨처음, 이전
 		if(pageNo != 1) {
-			pageBar += "<li style='width: 5%; font-size: 0.8em;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=1'>◀◀</a></li>";
-			pageBar += "<li style='width: 5%; font-size: 0.8em;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + (pageNo - 1) + "'>◀</a></li>";
+			pageBar += "<li style='width: 5%; font-size: 0.8em;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&sortType=" + sortType + "&currentShowPageNo=1'>◀◀</a></li>";
+			pageBar += "<li style='width: 5%; font-size: 0.8em;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&sortType=" + sortType + "&currentShowPageNo=" + (pageNo - 1) + "'>◀</a></li>";
 		}
 		
 		while(!(loop > blockSize || pageNo > totalPage)) {
@@ -160,7 +160,7 @@ public class BoardService_impl implements BoardService {
 				pageBar += "<li class='font-weight-bold' style='width: 3%; color: #0066ff;'>" + pageNo + "</li>";
 				
 			} else {
-				pageBar += "<li style='width: 3%;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + pageNo + "'>" + pageNo + "</a></li>";
+				pageBar += "<li style='width: 3%;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&sortType=" + sortType + "&currentShowPageNo=" + pageNo + "'>" + pageNo + "</a></li>";
 			}
 			
 			loop++;
@@ -169,8 +169,8 @@ public class BoardService_impl implements BoardService {
 		
 		// 다음, 마지막
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='width: 5%; font-size: 0.8em;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + pageNo + "'>▶</a></li>";
-			pageBar += "<li style='width: 5%; font-size: 0.8em;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + totalPage + "'>▶▶</a></li>";
+			pageBar += "<li style='width: 5%; font-size: 0.8em;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&sortType=" + sortType + "&currentShowPageNo=" + pageNo + "'>▶</a></li>";
+			pageBar += "<li style='width: 5%; font-size: 0.8em;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&sortType=" + sortType + "&currentShowPageNo=" + totalPage + "'>▶▶</a></li>";
 		}
 		
 		pageBar += "</ul>";

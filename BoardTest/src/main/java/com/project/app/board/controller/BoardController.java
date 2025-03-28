@@ -163,6 +163,7 @@ public class BoardController {
 		String goBackURL = request.getParameter("goBackURL");
 		String searchType = request.getParameter("searchType");
 		String searchWord = request.getParameter("searchWord");
+		String sortType = request.getParameter("sortType");
 		
 		// === 이전 글, 다음 글 보기 ===
 		Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
@@ -173,6 +174,7 @@ public class BoardController {
 			
 			boardSeq = redirectMap.get("boardSeq");
 			searchType = redirectMap.get("searchType");
+			sortType = redirectMap.get("sortType");
 			
 			try {
 				goBackURL = URLDecoder.decode(redirectMap.get("goBackURL"), "UTF-8");
@@ -206,6 +208,7 @@ public class BoardController {
 			// 검색->상세페이지를 들어간 경우 검색된 결과 내의 이전글,다음글을 보이게 하기 위함
 			paraMap.put("searchType", searchType);
 			paraMap.put("searchWord", searchWord);
+			paraMap.put("sortType", sortType);
 			
 			BoardVO board = null;
 			
@@ -257,6 +260,7 @@ public class BoardController {
 		String goBackURL = request.getParameter("goBackURL");
 		String searchType = request.getParameter("searchType");
 		String searchWord = request.getParameter("searchWord");
+		String sortType = request.getParameter("sortType");
 		
 		try {
 			goBackURL = URLEncoder.encode(goBackURL, "UTF-8");
@@ -275,8 +279,9 @@ public class BoardController {
 		redirectMap.put("goBackURL", goBackURL);
 		redirectMap.put("searchType", searchType);
 		redirectMap.put("searchWord", searchWord);
+		redirectMap.put("sortType", sortType);
 		
-		redirectAttr.addFlashAttribute("redirectMap", redirectMap);
+		redirectAttr.addFlashAttribute("redirectMap", redirectMap); // 리다이렉트 후에도 데이터를 유지할 수 있도록 Flash scope에 데이터 추가
 		
 		mav.setViewName("redirect:/board/detail.do");
 		

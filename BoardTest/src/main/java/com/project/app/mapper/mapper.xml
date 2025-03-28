@@ -149,12 +149,32 @@
 		FROM
 		(
 			SELECT boardSeq, fk_userid, name, subject, content, readCount, date_format(regDate, '%Y-%m-%d %H:%i') AS regDate, commentCount,
-				   LAG(boardSeq) OVER(ORDER BY boardSeq DESC) AS prevSeq,
-				   LAG(subject) OVER(ORDER BY boardSeq DESC) AS prevSubject,
-				   LEAD(boardSeq) OVER(ORDER BY boardSeq DESC) AS nextSeq,
-				   LEAD(subject) OVER(ORDER BY boardSeq DESC) AS nextSubject
-			FROM tbl_board
-			WHERE STATUS = 1
+		           LAG(boardSeq) OVER(ORDER BY 
+		               CASE 
+		                   WHEN #{sortType} = 'readCount' THEN readCount
+		                   WHEN #{sortType} = 'commentCount' THEN commentCount
+		                   ELSE boardSeq
+		               END DESC) AS prevSeq,
+		           LAG(subject) OVER(ORDER BY 
+		               CASE 
+		                   WHEN #{sortType} = 'readCount' THEN readCount
+		                   WHEN #{sortType} = 'commentCount' THEN commentCount
+		                   ELSE boardSeq
+		               END DESC) AS prevSubject,
+		           LEAD(boardSeq) OVER(ORDER BY 
+		               CASE 
+		                   WHEN #{sortType} = 'readCount' THEN readCount
+		                   WHEN #{sortType} = 'commentCount' THEN commentCount
+		                   ELSE boardSeq
+		               END DESC) AS nextSeq,
+		           LEAD(subject) OVER(ORDER BY 
+		               CASE 
+		                   WHEN #{sortType} = 'readCount' THEN readCount
+		                   WHEN #{sortType} = 'commentCount' THEN commentCount
+		                   ELSE boardSeq
+		               END DESC) AS nextSubject
+		    FROM tbl_board
+		    WHERE STATUS = 1
 			<choose>
 				<when test="searchType == 'subject' and searchWord != ''">
 					AND LOWER(subject) LIKE CONCAT('%', LOWER(#{searchWord}), '%')

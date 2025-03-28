@@ -307,7 +307,13 @@
 										<c:otherwise>${board.content}</c:otherwise>
 									</c:choose>
 								</div>
-								<div class="commentCount">댓글 ${board.commentCount}</div>
+								<div class="d-flex">
+									<div class="commentCount">댓글 ${board.commentCount}</div>
+									<%--
+									<span>·</span>
+									<div class="likeCount">좋아요 0</div>
+									 --%>
+								</div>
 							</div>
 						</div>
 						

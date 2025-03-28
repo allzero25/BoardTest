@@ -130,6 +130,20 @@
 		color: #0066ff;
 	}
 	
+	div#likeBtn {
+		border-radius: 10px;
+		width: 60px;
+		height: 40px;
+		text-align: center;
+		line-height: 37px;
+		cursor: pointer;
+	}
+	
+	.noLike {
+		border: solid 1px #999;
+		color: #808080;
+	}
+	
 	div.comment {
 		border-bottom: solid 1px #d9d9d9;
 		padding: 3% 0;
@@ -862,6 +876,7 @@
 		if(${not empty requestScope.paraMap}) { // 검색 조건이 있을 경우
 			frm.searchType.value = "${requestScope.paraMap.searchType}";
 			frm.searchWord.value = "${requestScope.paraMap.searchWord}";
+			frm.sortType.value = "${requestScope.paraMap.sortType}";
 		}
 		
 		frm.method = "post";
@@ -918,7 +933,7 @@
 		
 		<%-- ===== 댓글 ===== --%>
 		<div class="commentDiv">
-			<div class="BtnDiv">
+			<div class="BtnDiv d-flex justify-content-between">
 				<div id="commentBtn" class="commentToggleDown d-flex align-items-center justify-content-between">
 					<div>
 						<i class="fa-solid fa-comment-dots"></i>
@@ -931,6 +946,13 @@
 					</div>
 					<i class="fa-solid fa-angle-down"></i>
 				</div>
+				
+				<%--
+				 <!-- 좋아요 버튼 -->
+				<div id="likeBtn" class="noLike">
+					<i class="fa-regular fa-heart mr-2"></i>0
+				</div>
+				 --%>
 			</div>
 			<div class="commentToggleDiv">
 				<div class="commentContentDiv">
@@ -1137,4 +1159,5 @@
 	<input type="hidden" name="goBackURL">
 	<input type="hidden" name="searchType">
 	<input type="hidden" name="searchWord">
+	<input type="hidden" name="sortType">
 </form>
