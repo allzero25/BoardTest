@@ -18,15 +18,15 @@
    <!-- tiles-layout.xml 에서 선언된 name으로 put-attribute 된 것이 해당 jsp에서 insert-attribute 된다. -->
    
    <definition name="*/*/*.tiles1" extends="layout-tiles1">
-      <put-attribute name="content" value="/WEB-INF/jsp/tiles1/{1}/{2}/{3}.jsp"/>
+      <put-attribute name="content" value="/WEB-INF/views/tiles1/{1}/{2}/{3}.jsp"/>
    </definition>
    
    <definition name="*/*.tiles1" extends="layout-tiles1">
-      <put-attribute name="content" value="/WEB-INF/jsp/tiles1/{1}/{2}.jsp"/>
+      <put-attribute name="content" value="/WEB-INF/views/tiles1/{1}/{2}.jsp"/>
    </definition>
    
    <definition name="*.tiles1" extends="layout-tiles1">
-      <put-attribute name="content" value="/WEB-INF/jsp/tiles1/{1}.jsp"/>
+      <put-attribute name="content" value="/WEB-INF/views/tiles1/{1}.jsp"/>
    </definition>
    
 

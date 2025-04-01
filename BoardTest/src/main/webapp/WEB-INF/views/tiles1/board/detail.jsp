@@ -657,7 +657,6 @@
 					
 					$.each(json, function(index, item) {
 						
-						
 						const isAuthor = item.fk_userid == item.board_id; // 게시글 작성자와 댓글 작성자가 같은지
 						const isCurrentUser = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.userid}" == item.fk_userid); // 댓글 작성자와 현재 로그인한 사용자가 같은지
 						const isAdmin = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.status}" == 0);

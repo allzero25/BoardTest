@@ -41,7 +41,9 @@ public class CommonAop {
 			// 로그인 하기 전 페이지로 돌아가도록
 			String url = CommonUtil.getCurrentURL(request);
 			session.setAttribute("goBackURL", url);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/msg.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/msg.jsp");
+			
+			System.out.println(url);
 			
 			try {
 				dispatcher.forward(request, response);

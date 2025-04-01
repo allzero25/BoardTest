@@ -2,7 +2,10 @@ select * from tbl_board order by boardSeq desc;
 select * from tbl_board_img order by imgSeq DESC;
 SELECT * FROM tbl_member ORDER BY registerday DESC;
 
-
+UPDATE tbl_member
+SET phone = '1yEZOCTPCofSKGB5Gv3A3w=='
+WHERE userid = 'kimmy';
+COMMIT;
 
 -- 회원 테이블 생성
 /*
@@ -11,7 +14,7 @@ CREATE TABLE tbl_member (
     name VARCHAR(20) NOT NULL,
     email VARCHAR(200) NOT NULL,
     password VARCHAR(200) NOT NULL,
-    phone VARCHAR(11) NOT NULL,
+    phone VARCHAR(200) NOT NULL,
     birthday VARCHAR(10),
     gender TINYINT(1),
     registerday DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -28,9 +31,9 @@ CREATE TABLE tbl_member (
 alter table tbl_member
 add constraint UNIQUE_TBL_MEMBER_EMAIL unique(email);
 
--- phone 컬럼 타입 varchar(200) -> varchar(11) 변경
+-- phone 컬럼 타입 varchar(11) -> varchar(200) 변경
 ALTER TABLE tbl_member
-MODIFY phone VARCHAR(11); 
+MODIFY phone VARCHAR(200); 
 
 -- phone 컬럼 unique 제약조건 추가
 alter table tbl_member

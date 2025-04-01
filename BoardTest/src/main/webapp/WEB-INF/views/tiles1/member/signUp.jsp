@@ -24,7 +24,7 @@
 		            <span class="error"></span>
 		        </div>
 		        <div class="info_block mt-3">
-		            <input type="password" name="password" id="password" placeholder="비밀번호 입력 (영문, 숫자, 특수문자 포함 8~15자)">
+		            <input type="password" name="password" id="password" placeholder="비밀번호 입력 (영문, 숫자, 특수문자 포함 8~15자)" maxlength="15">
 		            <span class="error"></span>
 		        </div>
 		        <div class="info_block mt-3">

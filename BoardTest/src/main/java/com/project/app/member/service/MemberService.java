@@ -23,7 +23,7 @@ public interface MemberService {
 	ModelAndView loginEnd(Map<String, String> paraMap, ModelAndView mav, HttpServletRequest request);
 
 	// 아이디찾기: 성명,휴대폰에 대한 아이디 가져오기
-	String getUseridByNamePhone(Map<String, String> paraMap);
+	String getUseridByNamePhone(String name, String phone);
 
 	// 비밀번호찾기: 아이디,성명,이메일에 맞는 사용자가 있는지 확인 
 	boolean isExistUser(Map<String, String> paraMap);

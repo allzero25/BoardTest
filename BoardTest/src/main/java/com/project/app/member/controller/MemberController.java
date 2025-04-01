@@ -155,11 +155,7 @@ public class MemberController {
     	String name = request.getParameter("name");
     	String phone = request.getParameter("phone");
     	
-    	Map<String, String> paraMap = new HashMap<>();
-    	paraMap.put("name", name);
-    	paraMap.put("phone", phone);
-    	
-    	String userid = memberService.getUseridByNamePhone(paraMap);
+    	String userid = memberService.getUseridByNamePhone(name, phone);
     	
     	JSONObject jsonObj = new JSONObject();
     	jsonObj.put("userid", userid);
