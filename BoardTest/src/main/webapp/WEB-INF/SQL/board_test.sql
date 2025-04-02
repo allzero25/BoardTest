@@ -241,7 +241,7 @@ from tbl_comment;
 
 
 ### 댓글 목록 조회 (대댓글X, 페이징O)
-SELECT commentSeq, fk_userid, name, content, date_format(regDate, '%Y-%m-%d %H:%i') AS regDate, fk_boardSeq, status, groupno, fk_seq, depthno
+SELECT commentSeq, fk_userid, name, content, date_format(regDate, '%Y-%m-%d %H:%i') AS regDate, fk_boardSeq, status, groupno, fk_seq
 FROM tbl_comment
 WHERE fk_boardSeq = 15
 ORDER BY commentSeq DESC
@@ -253,7 +253,7 @@ LIMIT 5 OFFSET 0;
 WITH RECURSIVE comment_tree AS (
     SELECT commentSeq, fk_userid, name, content, 
            DATE_FORMAT(regDate, '%Y-%m-%d %H:%i') AS regDate, 
-           fk_boardSeq, status, groupno, fk_seq, depthno
+           fk_boardSeq, status, groupno, fk_seq
     FROM tbl_comment
     WHERE fk_seq = 0   ### 루트 댓글 선택(fk_seq가 0인 댓글) = 계층 구조의 최상위에 해당
 
@@ -261,7 +261,7 @@ WITH RECURSIVE comment_tree AS (
 
     SELECT c.commentSeq, c.fk_userid, c.name, c.content, 
            DATE_FORMAT(c.regDate, '%Y-%m-%d %H:%i'), 
-           c.fk_boardSeq, c.status, c.groupno, c.fk_seq, c.depthno
+           c.fk_boardSeq, c.status, c.groupno, c.fk_seq
     FROM tbl_comment c
     INNER JOIN comment_tree ct ON ct.commentSeq = c.fk_seq  ### 자식 댓글 선택 : 부모(ct.commentSeq)와 자식(c.fk_seq)을 연결하여 답글 가져오기 (INNER JOIN을 사용하여 연결)
 )
@@ -277,7 +277,7 @@ LIMIT 5 OFFSET 0;
 WITH RECURSIVE comment_tree AS (
     SELECT commentSeq, fk_userid, name, content, 
            DATE_FORMAT(regDate, '%Y-%m-%d %H:%i') AS regDate, 
-           fk_boardSeq, status, groupno, fk_seq, depthno
+           fk_boardSeq, status, groupno, fk_seq
     FROM tbl_comment
     WHERE fk_seq = 0 AND (STATUS = 1 
 	 		OR (STATUS = 0 AND EXISTS (
@@ -292,7 +292,7 @@ WITH RECURSIVE comment_tree AS (
 
     SELECT c.commentSeq, c.fk_userid, c.name, c.content, 
            DATE_FORMAT(c.regDate, '%Y-%m-%d %H:%i'), 
-           c.fk_boardSeq, c.status, c.groupno, c.fk_seq, c.depthno
+           c.fk_boardSeq, c.status, c.groupno, c.fk_seq
     FROM tbl_comment c
     INNER JOIN comment_tree ct ON ct.commentSeq = c.fk_seq
     WHERE c.status = 1   ### 자식 댓글 선택 : 부모(ct.commentSeq)와 자식(c.fk_seq)을 연결하여 status = 1인 답글 가져오기 (INNER JOIN 사용하여 연결)
@@ -310,7 +310,7 @@ LIMIT 5 OFFSET 0;
 WITH RECURSIVE comment_tree AS (
     SELECT commentSeq, fk_userid, name, content, 
            DATE_FORMAT(regDate, '%Y-%m-%d %H:%i') AS regDate, 
-           fk_boardSeq, status, groupno, fk_seq, depthno
+           fk_boardSeq, status, groupno, fk_seq
     FROM tbl_comment
     WHERE fk_seq = 0 AND (STATUS = 1 
 	 		OR (STATUS = 0 AND EXISTS (
@@ -325,20 +325,24 @@ WITH RECURSIVE comment_tree AS (
 
     SELECT c.commentSeq, c.fk_userid, c.name, c.content, 
            DATE_FORMAT(c.regDate, '%Y-%m-%d %H:%i'), 
-           c.fk_boardSeq, c.status, c.groupno, c.fk_seq, c.depthno
+           c.fk_boardSeq, c.status, c.groupno, c.fk_seq
     FROM tbl_comment c
     INNER JOIN comment_tree ct ON ct.commentSeq = c.fk_seq
     WHERE c.status = 1   ### 자식 댓글 선택 : 부모(ct.commentSeq)와 자식(c.fk_seq)을 연결하여 status = 1인 답글 가져오기 (INNER JOIN 사용하여 연결)
 )
 SELECT * FROM comment_tree
-WHERE fk_boardSeq = 11
+WHERE fk_boardSeq = 20
 ORDER BY groupno DESC, commentSeq ASC
 LIMIT 5 OFFSET 0;
 
 
 SELECT *
+FROM tbl_member
+ORDER BY registerday DESC;
+
+SELECT *
 FROM tbl_comment
-#WHERE fk_boardSeq = 19
+#WHERE fk_boardSeq = 20
 ORDER BY commentSeq DESC;
 
 
@@ -350,8 +354,6 @@ ORDER BY fk_boardSeq DESC;
 SELECT *
 FROM tbl_board
 ORDER BY boardSeq DESC;
-
-
 
 
 

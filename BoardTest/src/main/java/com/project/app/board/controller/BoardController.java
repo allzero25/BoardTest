@@ -91,6 +91,7 @@ public class BoardController {
 				}
 			}
 			
+			// 파일 업로드
 			for(MultipartFile file : files) {
 				
 				if(!file.isEmpty()) {
@@ -104,7 +105,6 @@ public class BoardController {
 						String newFileName = fileManager.uploadFile(bytes, originalFileName, path);
 						
 						fileNameArr[attachIdx++] = newFileName; // 업로드 된 파일명을 배열에 저장
-						bdto.setFileNameArr(fileNameArr);
 						
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -113,6 +113,7 @@ public class BoardController {
 				
 			} // end of for -----------------------------------
 			
+			bdto.setFileNameArr(fileNameArr);
 		}
 		
 		String content = CommonUtil.changeEtcTag(boardvo.getContent());
@@ -188,7 +189,6 @@ public class BoardController {
 		
 		mav.addObject("goBackURL", goBackURL);
 		
-		
 		try {
 			Integer.parseInt(boardSeq);
 			
@@ -196,14 +196,17 @@ public class BoardController {
 			MemberVO loginUser = (MemberVO)session.getAttribute("loginUser");
 			
 			String loginId = null;
+			boolean isAdmin = false;
 			
 			if(loginUser != null) {
-				loginId = loginUser.getUserid();
+				loginId = loginUser.getUserid(); // 현재 로그인한 사용자의 아이디
+				isAdmin = "0".equals(loginUser.getStatus()); // 관리자 여부 확인
 			}
 			
 			Map<String, Object> paraMap = new HashMap<>();
 			paraMap.put("boardSeq", boardSeq);
 			paraMap.put("loginId", loginId);
+			paraMap.put("isAdmin", isAdmin);
 			
 			// 검색->상세페이지를 들어간 경우 검색된 결과 내의 이전글,다음글을 보이게 하기 위함
 			paraMap.put("searchType", searchType);
@@ -235,6 +238,10 @@ public class BoardController {
 			// 글에 대한 첨부파일 이미지 리스트 가져오기
 			if(board != null) {
 				boardImgList = boardService.getBoardImgList(boardSeq);
+				
+			} else {
+				mav.setViewName("redirect:/board/list.do");
+				return mav;
 			}
 			
 			mav.addObject("board", board);
@@ -464,8 +471,8 @@ public class BoardController {
 	// 댓글 목록 불러오기
 	@ResponseBody
 	@GetMapping(value="commentList.do", produces="text/plain;charset=UTF-8")
-	public ResponseEntity<String> commentList(@RequestParam(defaultValue = "") String fk_boardSeq,
-							  @RequestParam(defaultValue = "") String currentShowPageNo) {
+	public String commentList(@RequestParam(defaultValue = "") String fk_boardSeq,
+							  				  @RequestParam(defaultValue = "") String currentShowPageNo) {
 		
 		if("".equals(currentShowPageNo))
 			currentShowPageNo = "1";
@@ -485,13 +492,9 @@ public class BoardController {
 		paraMap.put("searchType", "");
 		paraMap.put("searchWord", "");
 		paraMap.put("boardSeq", fk_boardSeq);
-		BoardVO boardvo = boardService.getBoardNoReadCount(paraMap); // 게시글 작성자 아이디를 알기 위함
+		BoardVO boardvo = boardService.getBoardNoReadCount(paraMap);
 		
-		if(boardvo == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시물이 없습니다.");
-		}
-		
-		int totalCount = Integer.parseInt(boardvo.getCommentCount());
+		int totalCount = Integer.parseInt(boardvo.getCommentCount()); // 게시글에 대한 댓글 개수
 		
 		JSONArray jsonArr = new JSONArray();
 		
@@ -513,13 +516,12 @@ public class BoardController {
 				
 				jsonObj.put("totalCount", totalCount);
 				jsonObj.put("countPerPage", countPerPage);
-				jsonObj.put("board_id", boardvo.getFk_userid()); // 게시글 작성자와 댓글 작성자가 일치한지 확인하기 위함
 				
 				jsonArr.put(jsonObj);
 			}
 		}
 		
-		return ResponseEntity.ok(jsonArr.toString());
+		return jsonArr.toString();
 		
 	} // end of public String commentList(@RequestParam(defaultValue = "") String fk_boardSeq, @RequestParam(defaultValue = "") String currentShowPageNo) -------
 	
@@ -664,6 +666,7 @@ public class BoardController {
 //		System.out.println(prevURL);
 		
 		session.setAttribute("goBackURL", prevURL);
+		session.setAttribute("readCountPermission", "yes");
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("goBackURL", prevURL);

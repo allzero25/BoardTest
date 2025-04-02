@@ -25,6 +25,10 @@
 	    	width: 70px;
 	    }
 	    
+	    div#searchDiv input {
+	    	width: 120px;
+	    }
+	    
 	    div.boardContainer {
 	    	width: 100vw !important;
 	    }
@@ -69,6 +73,10 @@
 	input#searchWord {
 		border: solid 1px #a6a6a6;
 		border-radius: 5px;
+	}
+	
+	input#searchWord:focus {
+		outline: none;
 	}
 	
 	div#sortDiv {
@@ -209,6 +217,7 @@
 			frm.submit();
 		});
 		
+		// 검색 시 검색 타입, 검색어, 정렬 타입 값 유지
 		if(${not empty requestScope.paraMap}) {
 			$("select#searchType").val("${requestScope.paraMap.searchType}");
 			$("input#searchWord").val("${requestScope.paraMap.searchWord}");

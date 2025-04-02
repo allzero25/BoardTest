@@ -43,8 +43,6 @@ public class CommonAop {
 			session.setAttribute("goBackURL", url);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/msg.jsp");
 			
-			System.out.println(url);
-			
 			try {
 				dispatcher.forward(request, response);
 				

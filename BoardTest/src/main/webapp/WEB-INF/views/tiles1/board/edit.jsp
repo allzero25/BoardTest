@@ -50,24 +50,25 @@
 	
 	table#editBoardTable td {
 		vertical-align: middle;
-		padding: 0 !important;
+		padding: 0 1%;
 	}
 	
-	input#name {
+	input {
 		background-color: transparent;
-	}
-	
-	.form-control {
+		width: 100%;
 		border: none;
-	}
-	
-	input:focus,
-	textarea:focus {
-		outline: none !important;
 	}
 	
 	textarea#content {
 		resize: none;
+		width: 100%;
+		border: none;
+		margin: 1% 0;
+	}
+	
+	input:focus,
+	textarea:focus {
+		outline: none;
 	}
 	
 	div#previewContainer {
@@ -249,20 +250,20 @@
 						<th>작성자</th>
 						<td>
 							<input type="hidden" name="boardSeq" value="${requestScope.board.boardSeq}">
-							<input type="text" id="name" name="name" class="form-control" value="${requestScope.board.name}" readonly>
+							<input type="text" id="name" name="name" value="${requestScope.board.name}" readonly>
 						</td>
 					</tr>
 					<tr>
 						<th>제목</th>
-						<td><input type="text" id="subject" name="subject" class="form-control" size="100" maxlength="200" value="${requestScope.board.subject}"></td>
+						<td><input type="text" id="subject" name="subject" maxlength="200" value="${requestScope.board.subject}"></td>
 					</tr>
 					<tr>
 						<th>내용</th>
-						<td><textarea id="content" name="content" class="form-control" rows="15"></textarea></td>
+						<td><textarea id="content" name="content" rows="15"></textarea></td>
 					</tr>
 					<tr>
 						<th>첨부파일</th>
-						<td><input type="file" name="attach" id="attachInput" multiple accept="image/*" class="form-control"></td>
+						<td><input type="file" name="attach" id="attachInput" multiple accept="image/*"></td>
 					</tr>
 					<tr>
 						<th>이미지<br>미리보기</th>
@@ -282,7 +283,7 @@
 			</div>
 			
 			<div id="btnDiv">
-				<button type="button" id="editBoardBtn" class="btn btn-primary mr-4" onclick="goEditBoard()">등록하기</button>
+				<button type="button" id="editBoardBtn" class="btn btn-primary mr-4" onclick="goEditBoard()">수정하기</button>
 				<button type="button" id="goBackBtn" class="btn btn-secondary">취소</button>
 			</div>
 		</form>

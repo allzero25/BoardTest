@@ -130,20 +130,6 @@
 		color: #0066ff;
 	}
 	
-	div#likeBtn {
-		border-radius: 10px;
-		width: 60px;
-		height: 40px;
-		text-align: center;
-		line-height: 37px;
-		cursor: pointer;
-	}
-	
-	.noLike {
-		border: solid 1px #999;
-		color: #808080;
-	}
-	
 	div.comment {
 		border-bottom: solid 1px #d9d9d9;
 		padding: 3% 0;
@@ -164,6 +150,10 @@
 		padding: 1px 4px;
 		width: 7%;
 		color: #0066ff;
+	}
+	
+	div.commentOptionBtn {
+		padding-left: 1%;
 	}
 	
 	div.cmt_content {
@@ -475,45 +465,47 @@
 				}
 			});
 			
+		}); // end of $(document).on("click", "span#editComment", function() {}) --------------------------
+		
+		
+		// 댓글 수정하기
+		$(document).on("click", "button#editCommentBtn", function() {
 			
-			// 댓글 수정하기
-			$(document).on("click", "button#editCommentBtn", function() {
-				
-				const new_content = $("textarea#new_content").val().trim();
-				
-				if(new_content == "") {
-					alert("댓글을 입력해 주세요.");
-					return;
-				}
-				
-				const queryString = $("form[name='editCommentFrm']").serialize();
-				
-				$.ajax({
-					url: "editComment.do",
-					type: "post",
-					data: queryString,
-					dataType: "json",
-					success: function(json) {
-						if(json.n == 1) {
-							
-							// 현재 수정한 댓글이 있는 페이지 보여주기
-							const currentShowPageNo = commentAreaDiv.parent().find("input.currentShowPageNo").val();
-//							console.log("currentShowPageNo : " + currentShowPageNo);
+			const commentAreaDiv = $(this).closest("div.comment-area");
+			const new_content = $("textarea#new_content").val().trim();
+			
+			if(new_content == "") {
+				alert("댓글을 입력해 주세요.");
+				$("textarea#new_content").focus();
+				return;
+			}
+			
+			const queryString = $("form[name='editCommentFrm']").serialize();
+ 			
+			$.ajax({
+				url: "editComment.do",
+				type: "post",
+				data: queryString,
+				dataType: "json",
+				success: function(json) {
+					if(json.n == 1) {
+						
+						// 현재 수정한 댓글이 있는 페이지 보여주기
+						const currentShowPageNo = commentAreaDiv.parent().find("input.currentShowPageNo").val();
+//						console.log("currentShowPageNo : " + currentShowPageNo);
 
-							getCommentList(currentShowPageNo);
-							
-						} else {
-							alert("댓글 수정 중 오류가 발생했습니다.");
-						}
-					},
-					error: function(request, status, error) {
-		                alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
-		            }
-				});
-				
+						getCommentList(currentShowPageNo);
+						
+					} else {
+						alert("댓글 수정 중 오류가 발생했습니다.");
+					}
+				},
+				error: function(request, status, error) {
+	                alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	            }
 			});
 			
-		}); // end of $(document).on("click", "span#editComment", function() {}) --------------------------
+		});
 		
 		
 		// 댓글 삭제
@@ -626,6 +618,7 @@
 	                // 댓글 입력란 초기화
 	                $("textarea#cmtWriteContent").val("");
 	                
+	                // 댓글 목록 보여주기 
 	                getCommentList(1);
 	                
 				} else {
@@ -657,21 +650,18 @@
 					
 					$.each(json, function(index, item) {
 						
-						const isAuthor = item.fk_userid == item.board_id; // 게시글 작성자와 댓글 작성자가 같은지
+						const isAuthor = item.fk_userid == "${requestScope.board.fk_userid}"; // 댓글 작성자와 게시글 작성자가 같은지
 						const isCurrentUser = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.userid}" == item.fk_userid); // 댓글 작성자와 현재 로그인한 사용자가 같은지
 						const isAdmin = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.status}" == 0);
-						const widthStyle = item.fk_seq != 0 ? '95%' : '100%';
 						const isReply = item.fk_seq != 0; // 답글일 경우 
 						
 						if(item.status == 0) {
 
-								let hasChild = json.some(innerItem => innerItem.fk_seq == item.commentSeq);
-								
-								if(hasChild) { // 자식 댓글이 있으면 '삭제된 댓글입니다.'로 표시
+								if(item.fk_seq == 0) { // '삭제된 댓글입니다.' 표시
 									v_html += `
 										<div id="comment\${index}" class="comment">
 										<div class="comment-area d-flex justify-content-between">
-											<div style="width: \${widthStyle};">
+											<div style="width: 100%;">
 												<div class="cmt_content">삭제된 댓글입니다.</div>
 												<div class="cmt_regDate">\${item.regDate}</div>
 											</div>
@@ -687,7 +677,7 @@
 								<div id="comment\${index}" class="comment">
 									<div class="comment-area d-flex justify-content-between">
 										\${isReply ? `<span style="padding: 0 1%;"><i class="fa-solid fa-arrow-turn-up"></i></span>` : ""} <%-- 답글일 경우 화살표 표시 --%>
-										<div style="width: \${widthStyle};">
+										<div style="width: \${isReply ? `95%` : `100%`};">
 											<div class="d-flex justify-content-between align-items-center position-relative">
 												<div style="width: 50%;">
 													<span class="cmt_name">\${item.name}</span>
@@ -740,17 +730,10 @@
 					const totalPage = Math.ceil(json[0].totalCount / json[0].countPerPage);
 					
 					createCommentPageBar(currentShowPageNo, totalPage);
-					
 				}
 			},
 			error: function(request, status, error) {
-				
-				if(request.status == 404) {
-					location.href = "list.do";
-					
-				} else {
-	                alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
-				}
+				alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
             }
 		});
 	} // end of function getCommentList(currentShowPageNo) --------------------------

@@ -40,6 +40,10 @@
 		margin: 5% auto;
 	}
 	
+	table#writeBoardTable {
+		width: 100%;
+	}
+	
 	table#writeBoardTable th {
 		width: 10%;
 		text-align: center;
@@ -48,23 +52,25 @@
 	
 	table#writeBoardTable td {
 		vertical-align: middle;
-		padding: 0 !important;
+		padding: 0 1%;
 	}
 	
-	input#name {
+	input {
 		background-color: transparent;
-	}
-	
-	.form-control {
+		width: 100%;
 		border: none;
-	}
-	
-	.form-control:focus {
-		outline: none !important;
 	}
 	
 	textarea#content {
 		resize: none;
+		width: 100%;
+		border: none;
+		margin: 1% 0;
+	}
+	
+	input:focus,
+	textarea:focus {
+		outline: none;
 	}
 	
 	div#previewContainer {
@@ -117,7 +123,7 @@
 	        previewContainer.empty(); // 미리보기 초기화
 	        
 	        let selectedImages = []; // 선택된 이미지 파일 목록 초기화
-	        const validFiles = []; // 유효한 이미지 파일을 저장할 배열
+	        let validFiles = []; // 유효한 이미지 파일을 저장할 배열
 	        
 	        $.each(files, function(index, file) {
 	        	
@@ -128,7 +134,7 @@
 
 	        	if(file.type !== "image/jpeg" && file.type !== "image/png") {
 	        		alert("jpg 또는 png 파일만 첨부 가능합니다.");
-	        		return;
+	        		return false;
 	        	}
 	        	
 	        	validFiles.push(file); // 유효한 파일을 배열에 추가
@@ -170,7 +176,7 @@
 		// 취소 버튼 클릭 시
 		$("button#goBackBtn").click(function() {
 			if(confirm("작성하던 내용이 저장되지 않습니다.\n글 작성을 취소하시겠습니까?")) {
-				history.back();
+				location.href = "list.do";
 			}
 		});
 		
@@ -180,12 +186,6 @@
 		
 		const subject = $("input#subject").val().trim();
 		const content = $("textarea#content").val().trim();
-		
-		if(subject == "" && content == "") {
-			alert("내용을 모두 입력하세요.");
-			$("input#subject").focus();
-			return;
-		}
 		
 		if(subject == "") {
 			alert("제목을 입력하세요.");
@@ -239,20 +239,20 @@
 						<th>작성자</th>
 						<td>
 							<input type="hidden" name="fk_userid" value="${sessionScope.loginUser.userid}">
-							<input type="text" id="name" name="name" class="form-control" value="${sessionScope.loginUser.name}" readonly>
+							<input type="text" id="name" name="name" value="${sessionScope.loginUser.name}" readonly>
 						</td>
 					</tr>
 					<tr>
 						<th>제목</th>
-						<td><input type="text" id="subject" name="subject" class="form-control" size="100" maxlength="200"></td>
+						<td><input type="text" id="subject" name="subject" maxlength="200"></td>
 					</tr>
 					<tr>
 						<th>내용</th>
-						<td><textarea id="content" name="content" class="form-control" rows="15"></textarea></td>
+						<td><textarea id="content" name="content" rows="15"></textarea></td>
 					</tr>
 					<tr>
 						<th>첨부파일</th>
-						<td><input type="file" name="attach" id="attachInput" multiple accept="image/*" class="form-control"></td>
+						<td><input type="file" name="attach" id="attachInput" multiple accept="image/*"></td>
 					</tr>
 					<tr>
 						<th>이미지<br>미리보기</th>

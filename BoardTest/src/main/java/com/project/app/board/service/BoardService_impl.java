@@ -177,11 +177,6 @@ public class BoardService_impl implements BoardService {
 		
 		mav.addObject("pageBar", pageBar);
 		
-		// 페이징 처리 시 순번에 필요한 변수들 mav에 넣어주기
-		mav.addObject("totalCount", totalCount);
-		mav.addObject("currentShowPageNo", currentShowPageNo);
-		mav.addObject("countPerPage", countPerPage);
-
 		mav.setViewName("board/list.tiles1");
 		
 		return mav;
@@ -196,11 +191,13 @@ public class BoardService_impl implements BoardService {
 		BoardVO board = boardDao.getBoard(paraMap);
 		
 		String loginId = (String)paraMap.get("loginId");
+		boolean isAdmin = (boolean)paraMap.get("isAdmin");
 		
 		if(loginId != null &&
 		   board != null &&
-		   !loginId.equals(board.getFk_userid())) {
-			// 로그인한 사용자가 다른 사람의 글을 읽을 때만 조회수 증가
+		   !loginId.equals(board.getFk_userid()) &&
+		   !isAdmin) {
+			// 로그인한 사용자가 다른 사람의 글을 읽을 때만 조회수 증가 (관리자 제외)
 			
 			int n = boardDao.updateReadCount(board.getBoardSeq()); // 조회수 1 증가하기
 			
