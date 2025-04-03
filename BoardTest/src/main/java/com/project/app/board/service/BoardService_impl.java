@@ -312,7 +312,7 @@ public class BoardService_impl implements BoardService {
 		
 		boolean isOK = false;
 		
-		if(commentvo.getFk_seq() == null) { // 원댓글일 경우
+		if(commentvo.getParentSeq() == null) { // 원댓글일 경우
 			
 			int groupno = boardDao.getGroupnoMax() + 1;
 			// groupno 값은 'groupno 컬럼의 최대값 + 1로 해야 한다.

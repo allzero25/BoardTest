@@ -512,7 +512,7 @@ public class BoardController {
 				jsonObj.put("fk_boardSeq", comment.getFk_boardSeq());
 				jsonObj.put("status", comment.getStatus());
 				jsonObj.put("groupno", comment.getGroupno());
-				jsonObj.put("fk_seq", comment.getFk_seq());
+				jsonObj.put("parentSeq", comment.getParentSeq());
 				
 				jsonObj.put("totalCount", totalCount);
 				jsonObj.put("countPerPage", countPerPage);
