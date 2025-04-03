@@ -201,7 +201,7 @@
 		
 		if(content.length < 5) {
 			alert("내용은 5자 이상 입력하세요.");
-			$("textarea#content").val("").focus();
+			$("textarea#content").focus();
 			return;
 		}
 		

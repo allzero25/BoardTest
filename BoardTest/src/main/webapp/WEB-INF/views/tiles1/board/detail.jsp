@@ -386,7 +386,7 @@
 								<textarea style="margin:1% 0;" rows="4" maxlength="1000" id="reply_content" name="content" placeholder="답글을 작성해 주세요."></textarea>
 								<input type="hidden" name="fk_boardSeq" value="${requestScope.board.boardSeq}" readonly>
 								<input type="hidden" name="groupno">
-								<input type="hidden" name="fk_seq">
+								<input type="hidden" name="parentSeq">
 								<div style="text-align: right; margin-top: 2%;">
 									<button id="writeReplyBtn" type="button" class="btn" onclick="goWriteReply(this)">등록</button>
 								</div>
@@ -653,11 +653,11 @@
 						const isAuthor = item.fk_userid == "${requestScope.board.fk_userid}"; // 댓글 작성자와 게시글 작성자가 같은지
 						const isCurrentUser = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.userid}" == item.fk_userid); // 댓글 작성자와 현재 로그인한 사용자가 같은지
 						const isAdmin = ${sessionScope.loginUser != null} && ("${sessionScope.loginUser.status}" == 0);
-						const isReply = item.fk_seq != 0; // 답글일 경우 
+						const isReply = item.parentSeq != 0; // 답글일 경우 
 						
 						if(item.status == 0) {
 
-								if(item.fk_seq == 0) { // '삭제된 댓글입니다.' 표시
+								if(item.parentSeq == 0) { // '삭제된 댓글입니다.' 표시
 									v_html += `
 										<div id="comment\${index}" class="comment">
 										<div class="comment-area d-flex justify-content-between">
@@ -792,14 +792,14 @@
 		}
 		
 		const groupno = $(button).closest("div.comment").find("input[name=groupno]").val(); // 그룹번호 (원댓글과 답댓글은 같은 그룹번호를 가짐)
-		const fk_seq = $(button).closest("div.comment").find("input#cmt_seq").val(); // 원댓글 번호
+		const parentSeq = $(button).closest("div.comment").find("input#cmt_seq").val(); // 원댓글 번호
 		const currentShowPageNo = $(button).closest("div.comment").find("input.currentShowPageNo").val(); // 현재 페이지 번호
 		
-//		console.log("groupno : " + groupno + ", fk_seq : " + fk_seq + ", currentShowPageNo : " + currentShowPageNo);
+//		console.log("groupno : " + groupno + ", parentSeq : " + parentSeq + ", currentShowPageNo : " + currentShowPageNo);
 		
 		const frm = document.writeReplyFrm;
 		frm.groupno.value = groupno;
-		frm.fk_seq.value = fk_seq;
+		frm.parentSeq.value = parentSeq;
 		
 		const queryString = $("form[name='writeReplyFrm']").serialize();
 		
@@ -815,6 +815,9 @@
 	                updateCommentCount(1);
 					
 	                getCommentList(currentShowPageNo);
+	                
+				} else {
+					alert("댓글 작성 중 오류가 발생하였습니다.");
 				}
 			},
 			error: function(request, status, error) {
@@ -1012,7 +1015,7 @@
 									<textarea style="margin:1% 0;" rows="4" maxlength="1000" name="content" placeholder="답글을 작성해 주세요."></textarea>
 									<input type="hidden" name="fk_boardSeq" value="${requestScope.board.boardSeq}" readonly>
 									<input type="hidden" name="groupno">
-									<input type="hidden" name="fk_seq">
+									<input type="hidden" name="parentSeq">
 									<input type="hidden" name="depthno">
 									<div style="text-align: right; margin-top: 2%;">
 										<button id="writeCommentBtn" type="button" class="btn">등록</button>

@@ -10,7 +10,7 @@ public class CommentVO {
 	private String fk_boardSeq; // 게시물 글번호
 	private String status;		// 댓글삭제여부 (0:삭제, 1:기본값)
 	private String groupno;		// 그룹번호 (원댓글과 답댓글은 동일한 groupno 를 가짐)
-	private String fk_seq;		// 기본값 0(원댓글일 경우), 원댓글 번호(답댓글일 경우)
+	private String parentSeq;	// 기본값 0(원댓글일 경우), 원댓글 번호(답댓글일 경우)
 	private String depthno;		// 기본값 0(원댓글일 경우), 원댓글의 depthno + 1(답댓글일 경우)
 	
 	
@@ -78,14 +78,14 @@ public class CommentVO {
 		this.groupno = groupno;
 	}
 	
-	public String getFk_seq() {
-		return fk_seq;
+	public String getParentSeq() {
+		return parentSeq;
 	}
-	
-	public void setFk_seq(String fk_seq) {
-		this.fk_seq = fk_seq;
+
+	public void setParentSeq(String parentSeq) {
+		this.parentSeq = parentSeq;
 	}
-	
+
 	public String getDepthno() {
 		return depthno;
 	}

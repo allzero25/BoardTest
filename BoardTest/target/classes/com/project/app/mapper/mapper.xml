@@ -232,15 +232,15 @@
 	<!-- 댓글 작성하기 -->
 	<insert id="insertComment" parameterType="CommentVO">
 		<!-- 원댓글일 경우 -->
-		<if test="fk_seq == null">
+		<if test="parentSeq == null">
 			insert into tbl_comment(fk_userid, name, content, fk_boardSeq, groupno)
 			values(#{fk_userid}, #{name}, #{content}, #{fk_boardSeq}, #{groupno})
 		</if>
 		
 		<!-- 답댓글일 경우 -->
-		<if test="fk_seq != null">
-			insert into tbl_comment(fk_userid, name, content, fk_boardSeq, groupno, fk_seq)
-			values(#{fk_userid}, #{name}, #{content}, #{fk_boardSeq}, #{groupno}, #{fk_seq})
+		<if test="parentSeq != null">
+			insert into tbl_comment(fk_userid, name, content, fk_boardSeq, groupno, parentSeq)
+			values(#{fk_userid}, #{name}, #{content}, #{fk_boardSeq}, #{groupno}, #{parentSeq})
 		</if>
 	</insert>
 	
@@ -256,13 +256,13 @@
 		WITH RECURSIVE comment_tree AS (
 		    SELECT commentSeq, fk_userid, name, content, 
 		           DATE_FORMAT(regDate, '%Y-%m-%d %H:%i') AS regDate, 
-		           fk_boardSeq, status, groupno, fk_seq
+		           fk_boardSeq, status, groupno, parentSeq
 		    FROM tbl_comment
-		    WHERE fk_seq = 0 AND (STATUS = 1 
+		    WHERE parentSeq = 0 AND (STATUS = 1 
 			 		OR (STATUS = 0 AND EXISTS (
 					 		SELECT 1
 					 		FROM tbl_comment sub
-					 		WHERE sub.fk_seq = tbl_comment.commentSeq
+					 		WHERE sub.parentSeq = tbl_comment.commentSeq
 					 		AND sub.status = 1
 					 ))
 				)
@@ -271,10 +271,10 @@
 		
 		    SELECT c.commentSeq, c.fk_userid, c.name, c.content, 
 		           DATE_FORMAT(c.regDate, '%Y-%m-%d %H:%i'), 
-		           c.fk_boardSeq, c.status, c.groupno, c.fk_seq
+		           c.fk_boardSeq, c.status, c.groupno, c.parentSeq
 		    FROM tbl_comment c
 		    INNER JOIN comment_tree ct
-		    ON c.fk_seq = ct.commentSeq
+		    ON c.parentSeq = ct.commentSeq
 		    WHERE c.status = 1
 		)
 		SELECT * FROM comment_tree

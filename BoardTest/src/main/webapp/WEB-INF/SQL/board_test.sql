@@ -88,7 +88,7 @@ CREATE TABLE tbl_comment (
     fk_boardSeq INT NOT NULL,
     status TINYINT DEFAULT 1 NOT NULL,  -- 0일 경우: 삭제
     groupno INT NOT NULL, -- 원댓글과 답댓글은 동일한 groupno를 가짐
-    fk_seq INT DEFAULT 0 NOT NULL, -- (답댓글일 경우)원댓글의 seq번호
+    parentSeq INT DEFAULT 0 NOT NULL, -- (답댓글일 경우)원댓글의 seq번호
     CONSTRAINT PK_TBL_COMMENT_SEQ PRIMARY KEY (commentSeq),
     CONSTRAINT FK_TBL_COMMENT_USERID FOREIGN KEY (fk_userid) REFERENCES tbl_member(userid) on delete cascade,
     CONSTRAINT FK_TBL_COMMENT_BOARDSEQ FOREIGN KEY (fk_boardSeq) REFERENCES tbl_board(boardSeq) on delete cascade,
@@ -99,6 +99,9 @@ CREATE TABLE tbl_comment (
 
 ALTER TABLE tbl_comment
 DROP COLUMN depthno;
+
+ALTER TABLE tbl_comment
+CHANGE fk_seq parentSeq INT DEFAULT 0 NOT NULL;
 
 
 
@@ -241,7 +244,7 @@ from tbl_comment;
 
 
 ### 댓글 목록 조회 (대댓글X, 페이징O)
-SELECT commentSeq, fk_userid, name, content, date_format(regDate, '%Y-%m-%d %H:%i') AS regDate, fk_boardSeq, status, groupno, fk_seq
+SELECT commentSeq, fk_userid, name, content, date_format(regDate, '%Y-%m-%d %H:%i') AS regDate, fk_boardSeq, status, groupno, parentSeq
 FROM tbl_comment
 WHERE fk_boardSeq = 15
 ORDER BY commentSeq DESC
@@ -253,17 +256,17 @@ LIMIT 5 OFFSET 0;
 WITH RECURSIVE comment_tree AS (
     SELECT commentSeq, fk_userid, name, content, 
            DATE_FORMAT(regDate, '%Y-%m-%d %H:%i') AS regDate, 
-           fk_boardSeq, status, groupno, fk_seq
+           fk_boardSeq, status, groupno, parentSeq
     FROM tbl_comment
-    WHERE fk_seq = 0   ### 루트 댓글 선택(fk_seq가 0인 댓글) = 계층 구조의 최상위에 해당
+    WHERE parentSeq = 0   ### 루트 댓글 선택(parentSeq가 0인 댓글) = 계층 구조의 최상위에 해당
 
     UNION ALL
 
     SELECT c.commentSeq, c.fk_userid, c.name, c.content, 
            DATE_FORMAT(c.regDate, '%Y-%m-%d %H:%i'), 
-           c.fk_boardSeq, c.status, c.groupno, c.fk_seq
+           c.fk_boardSeq, c.status, c.groupno, c.parentSeq
     FROM tbl_comment c
-    INNER JOIN comment_tree ct ON ct.commentSeq = c.fk_seq  ### 자식 댓글 선택 : 부모(ct.commentSeq)와 자식(c.fk_seq)을 연결하여 답글 가져오기 (INNER JOIN을 사용하여 연결)
+    INNER JOIN comment_tree ct ON ct.commentSeq = c.parentSeq  ### 자식 댓글 선택 : 부모(ct.commentSeq)와 자식(c.parentSeq)을 연결하여 답글 가져오기 (INNER JOIN을 사용하여 연결)
 )
 SELECT * FROM comment_tree
 WHERE fk_boardSeq = 14
@@ -277,25 +280,25 @@ LIMIT 5 OFFSET 0;
 WITH RECURSIVE comment_tree AS (
     SELECT commentSeq, fk_userid, name, content, 
            DATE_FORMAT(regDate, '%Y-%m-%d %H:%i') AS regDate, 
-           fk_boardSeq, status, groupno, fk_seq
+           fk_boardSeq, status, groupno, parentSeq
     FROM tbl_comment
-    WHERE fk_seq = 0 AND (STATUS = 1 
+    WHERE parentSeq = 0 AND (STATUS = 1 
 	 		OR (STATUS = 0 AND EXISTS (
 			 		SELECT 1
 			 		FROM tbl_comment sub
-			 		WHERE sub.fk_seq = tbl_comment.commentSeq
+			 		WHERE sub.parentSeq = tbl_comment.commentSeq
 			 		AND sub.status = 1
 			 ))
-		)   ### 루트 댓글 선택(fk_seq가 0인 댓글 중 status = 1인 건 모두, status = 0인 건 자식 댓글이 있는 댓글만) = 계층 구조의 최상위에 해당
+		)   ### 루트 댓글 선택(parentSeq가 0인 댓글 중 status = 1인 건 모두, status = 0인 건 자식 댓글이 있는 댓글만) = 계층 구조의 최상위에 해당
 		
     UNION ALL
 
     SELECT c.commentSeq, c.fk_userid, c.name, c.content, 
            DATE_FORMAT(c.regDate, '%Y-%m-%d %H:%i'), 
-           c.fk_boardSeq, c.status, c.groupno, c.fk_seq
+           c.fk_boardSeq, c.status, c.groupno, c.parentSeq
     FROM tbl_comment c
-    INNER JOIN comment_tree ct ON ct.commentSeq = c.fk_seq
-    WHERE c.status = 1   ### 자식 댓글 선택 : 부모(ct.commentSeq)와 자식(c.fk_seq)을 연결하여 status = 1인 답글 가져오기 (INNER JOIN 사용하여 연결)
+    INNER JOIN comment_tree ct ON ct.commentSeq = c.parentSeq
+    WHERE c.status = 1   ### 자식 댓글 선택 : 부모(ct.commentSeq)와 자식(c.parentSeq)을 연결하여 status = 1인 답글 가져오기 (INNER JOIN 사용하여 연결)
 )
 SELECT * FROM comment_tree
 WHERE fk_boardSeq = 11
@@ -310,25 +313,25 @@ LIMIT 5 OFFSET 0;
 WITH RECURSIVE comment_tree AS (
     SELECT commentSeq, fk_userid, name, content, 
            DATE_FORMAT(regDate, '%Y-%m-%d %H:%i') AS regDate, 
-           fk_boardSeq, status, groupno, fk_seq
+           fk_boardSeq, status, groupno, parentSeq
     FROM tbl_comment
-    WHERE fk_seq = 0 AND (STATUS = 1 
+    WHERE parentSeq = 0 AND (STATUS = 1 
 	 		OR (STATUS = 0 AND EXISTS (
 			 		SELECT 1
 			 		FROM tbl_comment sub
-			 		WHERE sub.fk_seq = tbl_comment.commentSeq
+			 		WHERE sub.parentSeq = tbl_comment.commentSeq
 			 		AND sub.status IN (0,1)
 			 ))
-		)   ### 루트 댓글 선택(fk_seq가 0인 댓글 중 status = 1인 건 모두, status = 0인 건 자식 댓글이 있는 댓글만) = 계층 구조의 최상위에 해당
+		)   ### 루트 댓글 선택(parentSeq가 0인 댓글 중 status = 1인 건 모두, status = 0인 건 자식 댓글이 있는 댓글만) = 계층 구조의 최상위에 해당
 		
     UNION ALL
 
     SELECT c.commentSeq, c.fk_userid, c.name, c.content, 
            DATE_FORMAT(c.regDate, '%Y-%m-%d %H:%i'), 
-           c.fk_boardSeq, c.status, c.groupno, c.fk_seq
+           c.fk_boardSeq, c.status, c.groupno, c.parentSeq
     FROM tbl_comment c
-    INNER JOIN comment_tree ct ON ct.commentSeq = c.fk_seq
-    WHERE c.status = 1   ### 자식 댓글 선택 : 부모(ct.commentSeq)와 자식(c.fk_seq)을 연결하여 status = 1인 답글 가져오기 (INNER JOIN 사용하여 연결)
+    INNER JOIN comment_tree ct ON ct.commentSeq = c.parentSeq
+    WHERE c.status = 1   ### 자식 댓글 선택 : 부모(ct.commentSeq)와 자식(c.parentSeq)을 연결하여 status = 1인 답글 가져오기 (INNER JOIN 사용하여 연결)
 )
 SELECT * FROM comment_tree
 WHERE fk_boardSeq = 20
