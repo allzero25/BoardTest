@@ -124,6 +124,13 @@
 		font-size: 0.9em;
 		text-align: justify;
 		margin: 2% 0;
+		overflow: hidden;
+		white-space: normal;
+		text-overflow: ellipsis; /* 말줄임 효과 */
+		display: -webkit-box;
+		-webkit-line-clamp: 3; /* 글 최대 라인 수 */
+		-webkit-box-orient: vertical;
+		word-break: keep-all; /* 문단으로 끊어져서 줄바꿈 */
 	}
 	
 	div.commentCount {
@@ -308,20 +315,9 @@
 							
 							<div style="margin: 0 2% 2% 2%;"> <!-- 제목, 내용, 댓글 -->
 								<div class="subject" onclick="goDetail(${board.boardSeq})">${board.subject}</div>
-								<div class="content" onclick="goDetail(${board.boardSeq})">
-									<c:choose>
-										<c:when test="${fn:length(board.content) > 150}">  <%-- 150자 이상일 경우 자르기 --%>
-											${fn:substring(board.content,0,150)}...
-										</c:when>
-										<c:otherwise>${board.content}</c:otherwise>
-									</c:choose>
-								</div>
+								<div class="content" onclick="goDetail(${board.boardSeq})">${board.content}</div>
 								<div class="d-flex">
 									<div class="commentCount">댓글 ${board.commentCount}</div>
-									<%--
-									<span>·</span>
-									<div class="likeCount">좋아요 0</div>
-									 --%>
 								</div>
 							</div>
 						</div>
@@ -347,12 +343,7 @@
 							<div style="margin: 0 2% 2% 2%;"> <!-- 제목, 내용, 댓글 -->
 								<div class="subject" onclick="goDetail(${board.boardSeq})">${board.subject}</div>
 								<div class="content" onclick="goDetail(${board.boardSeq})" style="height: 60px;">
-									<c:choose>
-										<c:when test="${fn:length(board.content) > 210}">  <%-- 210자 이상일 경우 자르기 --%>
-											${fn:substring(board.content,0,210)}...
-										</c:when>
-										<c:otherwise>${board.content}</c:otherwise>
-									</c:choose>
+									${board.content}
 								</div>
 								<div class="commentCount">댓글 ${board.commentCount}</div>
 							</div>

@@ -44,6 +44,7 @@
 	
 	table#editBoardTable th {
 		width: 10%;
+		min-width: 100px;
 		text-align: center;
 		vertical-align: middle;
 	}
