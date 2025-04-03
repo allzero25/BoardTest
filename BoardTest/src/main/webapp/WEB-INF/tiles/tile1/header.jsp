@@ -49,7 +49,7 @@
 				
 				<c:if test="${not empty sessionScope.loginUser}">
 					<li class="nav-item">
-						<a class="nav-link" href="#">${sessionScope.loginUser.name} 님</a>
+						<a class="nav-link">${sessionScope.loginUser.name} 님</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="<%=ctxPath%>/member/logout.do">로그아웃</a>

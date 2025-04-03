@@ -73,8 +73,8 @@
 	        <form name="loginFrm">
 	        
 	            <div class="info">
-	                <input type="text" name="userid" id="userid" placeholder="아이디">
-	                <input type="password" name="password" id="password" placeholder="비밀번호">
+	                <input type="text" name="userid" id="userid" placeholder="아이디" maxlength="20">
+	                <input type="password" name="password" id="password" placeholder="비밀번호" maxlength="15">
 	            </div>
 	            <div style="margin: 0 0 1% 2%;">
 	                <input type="checkbox" id="saveid">

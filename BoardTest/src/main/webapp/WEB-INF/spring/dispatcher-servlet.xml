@@ -24,7 +24,7 @@
 
     <!-- 화면처리용 JSP 파일명의 prefix, suffix 처리 -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="prefix" value="/WEB-INF/views/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
     
@@ -59,7 +59,7 @@
     </beans:bean>
     
    	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-	    <beans:property name="prefix" value="/WEB-INF/jsp/" />
+	    <beans:property name="prefix" value="/WEB-INF/views/" />
 	    <beans:property name="suffix" value=".jsp" />
 	    <beans:property name="order" value="2"/>
    	</beans:bean>

@@ -91,13 +91,6 @@
 			return;
 		}
 		
-		if(pwCheck == "") {
-			alert("비밀번호 확인을 입력해주세요.");
-			$("input#pwCheck").val("").focus();
-			return;
-			
-		}
-		
 		const regExp_password = new RegExp(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g);
 		const bool = regExp_password.test(password);
 		
@@ -105,6 +98,13 @@
 			alert("비밀번호는 8~15자 이내 영문, 숫자, 특수문자를 포함하여 입력해주세요.");
 			$("input#password").val("").focus();
 			return;
+		}
+
+		if(pwCheck == "") {
+			alert("비밀번호 확인을 입력해주세요.");
+			$("input#pwCheck").val("").focus();
+			return;
+			
 		}
 		
 		if(password != pwCheck) {

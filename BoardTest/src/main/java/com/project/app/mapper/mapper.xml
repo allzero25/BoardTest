@@ -273,7 +273,8 @@
 		           DATE_FORMAT(c.regDate, '%Y-%m-%d %H:%i'), 
 		           c.fk_boardSeq, c.status, c.groupno, c.fk_seq
 		    FROM tbl_comment c
-		    INNER JOIN comment_tree ct ON ct.commentSeq = c.fk_seq
+		    INNER JOIN comment_tree ct
+		    ON c.fk_seq = ct.commentSeq
 		    WHERE c.status = 1
 		)
 		SELECT * FROM comment_tree

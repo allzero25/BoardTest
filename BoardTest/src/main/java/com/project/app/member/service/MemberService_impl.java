@@ -2,6 +2,7 @@ package com.project.app.member.service;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,10 +72,18 @@ public class MemberService_impl implements MemberService {
 		
 		boolean isExist = false;
 		
-		MemberVO member = memberDao.getMemberByPhone(phone); // 휴대폰에 대한 회원정보 가져오기
-		
-		if(member != null)
-			isExist = true;
+		try {
+			phone = aes256.encrypt(phone);
+			
+//			System.out.println(phone);
+			MemberVO member = memberDao.getMemberByPhone(phone); // 휴대폰에 대한 회원정보 가져오기
+			
+			if(member != null)
+				isExist = true;
+			
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		}
 		
 		return isExist;
 	}
@@ -87,10 +96,11 @@ public class MemberService_impl implements MemberService {
 		try {
 			String password = Sha256.encrypt(mvo.getPassword());
 			String email = aes256.encrypt(mvo.getEmail());
+			String phone = aes256.encrypt(mvo.getPhone());
 			
 			mvo.setPassword(password);
 			mvo.setEmail(email);
-			
+			mvo.setPhone(phone);
 			
 		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
 			e.printStackTrace();
@@ -122,7 +132,9 @@ public class MemberService_impl implements MemberService {
 			
 			try {
 				String email = aes256.decrypt(loginUser.getEmail());
+				String phone = aes256.decrypt(loginUser.getPhone());
 				loginUser.setEmail(email);
+				loginUser.setEmail(phone);
 				
 			} catch (UnsupportedEncodingException | GeneralSecurityException e) {
 				e.printStackTrace();
@@ -149,9 +161,22 @@ public class MemberService_impl implements MemberService {
 	
 	// 아이디찾기: 이름,휴대폰에 대한 아이디 가져오기
 	@Override
-	public String getUseridByNamePhone(Map<String, String> paraMap) {
+	public String getUseridByNamePhone(String name, String phone) {
 		
-		String userid = memberDao.getUseridByNamePhone(paraMap);
+		String userid = null;
+		
+		try {
+			phone = aes256.encrypt(phone); // 휴대폰 암호화
+			
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("name", name);
+			paraMap.put("phone", phone);
+			
+			userid = memberDao.getUseridByNamePhone(paraMap);
+			
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		}
 		
 		return userid;
 	}

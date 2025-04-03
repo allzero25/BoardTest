@@ -60,7 +60,7 @@
 	    font-size: 16px;
 	}
 	
-	button#idFindBtn {
+	button#pwFindBtn {
 	    width: 100%;
 	    height: 50px;
 	    margin: 1% auto;
@@ -72,32 +72,40 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		
-		$("input#phone").keyup(function(e) {
+		$("input#email").keyup(function(e) {
 			if(e.keyCode == 13) {
-				goIdFind();
+				goPwFind();
 			}
-		});
-		
-		$(document).on("click", "button#loginBtn", function() {
-			location.href = "<%=ctxPath%>/member/login.do";
-		});
-		
-		$(document).on("click", "button#pwFindBtn", function() {
-			location.href = "<%=ctxPath%>/member/pwFind.do";
 		});
 		
 	});
 	
-	function goIdFind() {
+	function goPwFind() {
 		
+		const userid = $("input#userid").val().trim();
 		const name = $("input#name").val().trim();
-		const phone = $("input#phone").val().trim();
+		const email = $("input#email").val().trim();
 
-		if(name == "" && phone == "") {
+		if(userid == "" && name == "" && email == "") {
 			alert("정보를 입력해주세요.");
-			$("input#name").val("").focus();
+			$("input#userid").val("").focus();
 			return;
 			
+		}
+		
+		if(userid == "") {
+			alert("아이디를 입력해주세요.");
+			$("input#userid").val("").focus();
+			return;
+		}
+
+		const regExp_userid = new RegExp(/^(?=.*[A-Za-z])[A-Za-z0-9]{5,20}$/);
+		const bool_userid = regExp_userid.test(userid);
+		
+		if(!bool_userid) {
+			alert("아이디는 5~20자 이내의 영문, 숫자만 입력 가능합니다.");
+			$("input#userid").val("").focus();
+			return;
 		}
 		
 		if(name == "") {
@@ -106,14 +114,7 @@
 			return;
 			
 		}
-		
-		if(phone == "") {
-			alert("휴대폰 번호를 입력해주세요.");
-			$("input#phone").val("").focus();
-			return;
-			
-		} 
-		
+
 		const regExp_name = new RegExp(/^[가-힣]{2,6}$/);
 		const bool_name = regExp_name.test(name);
 		
@@ -123,44 +124,40 @@
 			return;
 		}
 		
-		
-		const regExp_phone = new RegExp(/^01[016789]{1}[0-9]{3,4}[0-9]{4}$/);
-		const bool_phone = regExp_phone.test(phone);
-		
-		if(!bool_phone) {
-			alert("유효하지 않은 연락처입니다.");
-			$("input#phone").val("").focus();
+		if(email == "") {
+			alert("이메일을 입력해주세요.");
+			$("input#email").val("").focus();
 			return;
+			
 		}
 		
-		const formData = $("form[name='idFindFrm']").serialize();
+		const regExp_email = new RegExp(/^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i);
+		const bool_email = regExp_email.test(email);
+		
+		if(!bool_email) {
+			alert("올바른 이메일 형식이 아닙니다.\n이메일을 다시 입력해주세요.");
+			$("input#email").val("").focus();
+			return;
+		}
+
+		const queryString = $("form[name='pwFindFrm']").serialize();
 		
 		$.ajax({
-			url: "<%=ctxPath%>/member/idFind.do",
+			url: "<%=ctxPath%>/member/pwFind.do",
 			type: "post",
-			data: formData,
+			data: queryString,
 			dataType: "json",
 			success: function(json) {
 				
-				if(json.userid) {
-					
-					let v_html = `<div class="text-center" style="padding: 7% 0;">
-			        	<span style="margin: 5% 0 3% 0; font-size: 1.2em;"><span class="font-weight-bold">\${name}</span>님의 아이디</span>
-			        	<div style="border: solid 1px rgba(0, 0, 0, 0.15); border-radius: 20px; width: 70%; margin: 5% auto; padding: 10% 0;">
-			        		<span class="font-weight-bold" style="font-size: 1.5em;">\${json.userid}</span>
-			        	</div>
-			        	<div class="text-center" style="width: 80%; margin: 0 auto;">
-				        	<button id="loginBtn" type="button" class="btn btn-success mr-3">로그인하러 가기</button>
-				        	<button id="pwFindBtn" type="button" class="btn btn-outline-success">비밀번호 찾기</button>
-			        	</div>
-			        </div>`;
-			        
-			        $("div#idFindDiv").html(v_html);
+				if(json.isExist) {
+					alert("사용자 인증이 완료되었습니다.\n비밀번호 변경 페이지로 이동합니다.");
+					location.href = "<%=ctxPath%>/member/pwFind/pwUpdate.do";
 					
 				} else {
-					alert("일치하는 사용자 아이디가 없습니다.");
-					$("input#name").val("").focus();
-					$("input#phone").val("");
+					alert("일치하는 사용자 정보가 없습니다.");
+					$("input#userid").val("").focus();
+					$("input#name").val("");
+					$("input#email").val("");
 				}
 			},
 			error: function(request, status, error) {
@@ -172,18 +169,19 @@
 
     <div class="container">
 	    <div style="width: 80%; margin: 7% auto;">
-	        <h2 style="margin-top: 20%;" class="font-weight-bold">아이디 찾기</h2>
+	        <h2 style="margin-top: 20%;" class="font-weight-bold">비밀번호 찾기</h2>
 	
-			<div id="idFindDiv">
-		        <form name="idFindFrm">
+			<div id="pwFindDiv">
+		        <form name="pwFindFrm">
 		        
 		            <div class="info">
-		                <input type="text" name="name" id="name" placeholder="성명">
-		                <input type="text" name="phone" id="phone" placeholder="휴대폰 번호 ('-' 제외 11자리 입력)">
+		                <input type="text" name="userid" id="userid" placeholder="아이디" maxlength="20">
+		                <input type="text" name="name" id="name" placeholder="성명" maxlength="6">
+		                <input type="text" name="email" id="email" placeholder="이메일">
 		            </div>
 		            
 		            <div style="margin: 10% 0 20% 0;">
-		                <button type="button" class="btn btn-primary" id="idFindBtn" onclick="goIdFind()">아이디 찾기</button>
+		                <button type="button" class="btn btn-primary" id="pwFindBtn" onclick="goPwFind()">비밀번호 찾기</button>
 		            </div>
 		
 		        </form>
